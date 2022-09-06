@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Reports from "@/components/Reports"
+import Reports from "@/components/"
 
 export default {
   name: 'App',
