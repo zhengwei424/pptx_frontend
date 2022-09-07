@@ -1,12 +1,20 @@
 <template>
-  <div>
+  <div class="release">
+    <h3>支撑发版</h3>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
         style="width: 100%"
+        border
         @cell-dblclick="dbclick"
+        @selection-change="getSelectedItems"
         :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
     >
+      <el-table-column
+          type="selection"
+          width="55"
+      >
+      </el-table-column>
       <el-table-column
           prop="department"
           label="专业"
@@ -70,7 +78,7 @@
       <el-table-column
           prop="exception"
           label="异常情况处理"
-          width="100"
+          width="150"
       >
         <template slot-scope="scope">
           <el-input type="text"
@@ -83,6 +91,10 @@
         </template>
       </el-table-column>
     </el-table>
+    <div>
+      <el-button type="primary" @click="add">添加行</el-button>
+      <el-button type="danger" @click="dels">删除行</el-button>
+    </div>
   </div>
 </template>
 
@@ -93,6 +105,7 @@ export default {
     return {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
+      selectedItems: [],
       tableData: [
         {
           department: '',
@@ -111,14 +124,6 @@ export default {
       }
     }
   },
-  // watch: {
-  //   tableData: {
-  //     deep: true,
-  //     handler(a, b) {
-  //       console.log("old: ", a, "new: ", b)
-  //     }
-  //   }
-  // },
   methods: {
     dbclick(row, column) {
       this.currentCellRowIndex = row.index
@@ -128,10 +133,36 @@ export default {
       this.currentCellRowIndex = null
       this.currentCellColumnIndex = null
     },
+    getSelectedItems(items) {
+      this.selectedItems = items
+    },
+    add() {
+      const row = {
+        department: '',
+        date: '',
+        count: '',
+        content: '',
+        exception: '',
+      }
+      this.tableData.push(row)
+    },
+    dels() {
+      for (const item of this.selectedItems) {
+        this.tableData.splice(item.index, 1)
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
-
+h3 {
+  color: rgb(0, 0, 0, 0.7);
+}
+.release {
+  margin: 10px 0;
+  padding: 10px;
+  /*阴影效果*/
+  box-shadow: #666666 0 0 10px;
+}
 </style>

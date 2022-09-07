@@ -6,7 +6,7 @@
     <permission-management></permission-management>
     <cooperation></cooperation>
     <problem></problem>
-    <cluster-info></cluster-info>
+    <working-plan></working-plan>
   </div>
 </template>
 
@@ -17,7 +17,7 @@ import Release from '@/components/3_release'
 import PermissionManagement from '@/components/4_permissionManagement'
 import Cooperation from '@/components/5_cooperation'
 import Problem from '@/components/6_problem'
-import ClusterInfo from '@/components/7_clusterInfo'
+import WorkingPlan from '@/components/7_workingPlan'
 
 export default {
   name: "Reports",
@@ -28,7 +28,7 @@ export default {
     PermissionManagement,
     Cooperation,
     Problem,
-    ClusterInfo
+    WorkingPlan
   }
 }
 </script>

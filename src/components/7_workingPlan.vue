@@ -1,6 +1,6 @@
 <template>
-  <div class="permissionManagement">
-    <h3>资源权限管理</h3>
+  <div class="workingPlan">
+    <h3>下周工作计划</h3>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
@@ -13,7 +13,8 @@
       <el-table-column
           type="selection"
           width="55"
-      ></el-table-column>
+      >
+      </el-table-column>
       <el-table-column
           label="序号"
           width="100"
@@ -38,38 +39,23 @@
         </template>
       </el-table-column>
       <el-table-column
-          prop="environment"
-          label="环境"
+          prop="category"
+          label="工作类别"
           width="100"
       >
         <template slot-scope="scope">
           <el-input type="text"
-                    v-model="scope.row.environment"
+                    v-model="scope.row.category"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
                     v-focus
           />
-          <span v-else>{{ scope.row.environment }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-          prop="demander"
-          label="需求方"
-          width="100"
-      >
-        <template slot-scope="scope">
-          <el-input type="text"
-                    v-model="scope.row.demander"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
-                    @blur="saveData"
-                    v-focus
-          />
-          <span v-else>{{ scope.row.demander }}</span>
+          <span v-else>{{ scope.row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="content"
-          label="申请内容"
+          label="工作内容"
           width="100"
       >
         <template slot-scope="scope">
@@ -84,7 +70,7 @@
       </el-table-column>
       <el-table-column
           prop="progress"
-          label="完成进度"
+          label="工作进度"
           width="100"
       >
         <template slot-scope="scope">
@@ -97,6 +83,21 @@
           <span v-else>{{ scope.row.progress }}</span>
         </template>
       </el-table-column>
+      <el-table-column
+          prop="next"
+          label="后续安排"
+          width="100"
+      >
+        <template slot-scope="scope">
+          <el-input type="text"
+                    v-model="scope.row.next"
+                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    @blur="saveData"
+                    v-focus
+          />
+          <span v-else>{{ scope.row.next }}</span>
+        </template>
+      </el-table-column>
     </el-table>
     <div>
       <el-button type="primary" @click="add">添加行</el-button>
@@ -107,7 +108,7 @@
 
 <script>
 export default {
-  name: "PermissionManagement",
+  name: "WorkingPlan",
   data() {
     return {
       currentCellRowIndex: null,
@@ -116,10 +117,10 @@ export default {
       tableData: [
         {
           department: '',
-          environment: '',
-          demander: '',
+          category: '',
           content: '',
           progress: '',
+          next: '',
         }
       ]
     }
@@ -146,10 +147,10 @@ export default {
     add() {
       const row = {
         department: '',
-        environment: '',
-        demander: '',
+        category: '',
         content: '',
         progress: '',
+        next: '',
       }
       this.tableData.push(row)
     },
@@ -166,7 +167,7 @@ export default {
 h3 {
   color: rgb(0, 0, 0, 0.7);
 }
-.permissionManagement {
+.workingPlan {
   margin: 10px 0;
   padding: 10px;
   /*阴影效果*/

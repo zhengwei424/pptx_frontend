@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="inspect">
+    <h3>巡检</h3>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
+        border
         style="width: 100%"
         @cell-dblclick="dbclick"
         :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
@@ -11,7 +13,7 @@
           prop="department"
           label="专业"
           width="100">
-        惠企
+        联通云
       </el-table-column>
       <el-table-column
           prop="inspect_counts"
@@ -62,7 +64,7 @@
         <el-table-column
             prop="Mon_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -77,7 +79,7 @@
         <el-table-column
             prop="Mon_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -94,7 +96,7 @@
         <el-table-column
             prop="Tue_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -109,7 +111,7 @@
         <el-table-column
             prop="Tue_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -126,7 +128,7 @@
         <el-table-column
             prop="Wed_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -141,7 +143,7 @@
         <el-table-column
             prop="Wed_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -158,7 +160,7 @@
         <el-table-column
             prop="Thu_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -173,7 +175,7 @@
         <el-table-column
             prop="Thu_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -190,7 +192,7 @@
         <el-table-column
             prop="Fri_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -205,7 +207,7 @@
         <el-table-column
             prop="Fri_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -222,7 +224,7 @@
         <el-table-column
             prop="Sat_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -237,7 +239,7 @@
         <el-table-column
             prop="Sat_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -254,7 +256,7 @@
         <el-table-column
             prop="Sun_morning"
             label="上午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -269,7 +271,7 @@
         <el-table-column
             prop="Sun_afternoon"
             label="下午"
-            width="100"
+            width="80"
         >
           <template slot-scope="scope">
             <el-input type="text"
@@ -346,5 +348,13 @@ export default {
 
 
 <style scoped>
-
+h3 {
+  color: rgb(0, 0, 0, 0.7);
+}
+.inspect {
+  margin: 10px 0;
+  padding: 10px;
+  /*阴影效果*/
+  box-shadow: #666666 0 0 10px;
+}
 </style>
