@@ -47,7 +47,8 @@
 
       </el-collapse-item>
     </el-collapse>
-
+    <weekly-reports></weekly-reports>
+    <monthly-reports></monthly-reports>
   </div>
 </template>
 
@@ -59,6 +60,8 @@ import PermissionManagement from '@/components/4_permissionManagement'
 import Cooperation from '@/components/5_cooperation'
 import Problem from '@/components/6_problem'
 import WorkingPlan from '@/components/7_workingPlan'
+import WeeklyReports from '@/components/8_weeklyReports'
+import MonthlyReports from '@/components/9_monthlyReports'
 
 export default {
   name: "Reports",
@@ -69,7 +72,9 @@ export default {
     PermissionManagement,
     Cooperation,
     Problem,
-    WorkingPlan
+    WorkingPlan,
+    WeeklyReports,
+    MonthlyReports
   },
   data() {
     return {

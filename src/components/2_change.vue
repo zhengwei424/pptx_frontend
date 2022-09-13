@@ -8,7 +8,7 @@
         style="width: 100%"
         @cell-dblclick="dbclick"
         @selection-change="getSelectedItems"
-        :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
+        :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex) (column.index = columnIndex))"
     >
       <el-table-column
           type="selection"
@@ -168,7 +168,7 @@ export default {
       this.selectedItems = items
     },
     add() {
-      // object对象每次添加都需要重新初始化，不能使用放在data中的初始数据，会被select视为同一个数据（单一次选中所有新行）？？？
+      // (值类型和引用类型的区别)object对象每次添加都需要重新初始化，不能使用放在data中的初始数据，会被select视为同一个数据（单一次选中所有新行）？？？
       const row = {
         department: '',
         category: '',
@@ -193,6 +193,7 @@ export default {
 h3 {
   color: rgb(0, 0, 0, 0.7);
 }
+
 .change {
   margin: 10px 0;
   padding: 10px;
