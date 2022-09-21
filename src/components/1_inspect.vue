@@ -289,47 +289,24 @@
 </template>
 
 <script>
+
 export default {
   name: 'Inspect',
   data() {
     return {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
-      tableData: [
-        {
-          inspect_counts: 11,
-          error_counts: 0,
-          reports_commit: 6,
-          Mon_morning: '√',
-          Mon_afternoon: '√',
-          Tue_morning: '√',
-          Tue_afternoon: '√',
-          Wed_morning: '√',
-          Wed_afternoon: '√',
-          Thu_morning: '√',
-          Thu_afternoon: '√',
-          Fri_morning: '√',
-          Fri_afternoon: '√',
-          Sat_morning: '',
-          Sat_afternoon: '',
-          Sun_morning: '√',
-          Sun_afternoon: '',
-        }
-      ]
+    }
+  },
+  computed: {
+    tableData() {
+      return this.$store.state.inspect
     }
   },
   directives: {
     focus: {
       inserted: function (el) {
         el.querySelector('input').focus()
-      }
-    }
-  },
-  watch: {
-    tableData: {
-      deep: true,
-      handler(a, b) {
-        console.log("old: ", a, "new: ", b)
       }
     }
   },
@@ -341,6 +318,7 @@ export default {
     saveData() {
       this.currentCellRowIndex = null
       this.currentCellColumnIndex = null
+      this.$store.commit('setInspect', this.tableData)
     },
   }
 }
@@ -351,6 +329,7 @@ export default {
 h3 {
   color: rgb(0, 0, 0, 0.7);
 }
+
 .inspect {
   margin: 10px 0;
   padding: 10px;

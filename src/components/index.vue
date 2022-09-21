@@ -29,7 +29,7 @@
               <el-option label="12月" value="12"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="月">
+          <el-form-item label="周">
             <el-select v-model="formData.week" placeholder="月">
               <el-option label="第1周" value="1"></el-option>
               <el-option label="第2周" value="2"></el-option>
@@ -62,6 +62,7 @@ import Problem from '@/components/6_problem'
 import WorkingPlan from '@/components/7_workingPlan'
 import WeeklyReports from '@/components/8_weeklyReports'
 import MonthlyReports from '@/components/9_monthlyReports'
+import axios from 'axios'
 
 export default {
   name: "Reports",
@@ -87,7 +88,11 @@ export default {
   },
   methods: {
     onSubmit() {
-
+      const weeklyData = JSON.stringify(this.$store.getters.weeklyData)
+      axios.post('xxxxx', weeklyData)
+          .then(res=>{
+            console.log(res)
+          })
     }
   }
 }

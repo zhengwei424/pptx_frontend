@@ -1,6 +1,10 @@
 <template>
   <div class="change">
     <h3>变更</h3>
+    <div style="margin-bottom: 5px">
+      <el-button type="primary" @click="add">插入行</el-button>
+      <el-button type="danger" @click="dels">删除行</el-button>
+    </div>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
@@ -8,7 +12,7 @@
         style="width: 100%"
         @cell-dblclick="dbclick"
         @selection-change="getSelectedItems"
-        :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex) (column.index = columnIndex))"
+        :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
     >
       <el-table-column
           type="selection"
@@ -120,10 +124,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <div>
-      <el-button type="primary" @click="add">插入行</el-button>
-      <el-button type="danger" @click="dels">删除行</el-button>
-    </div>
   </div>
 </template>
 
@@ -135,17 +135,11 @@ export default {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
       selectedItems: [],
-      tableData: [
-        {
-          department: '',
-          category: '',
-          content: '',
-          effect: '',
-          date: '',
-          support: '',
-          progress: ''
-        }
-      ]
+    }
+  },
+  computed: {
+    tableData() {
+      return this.$store.state.change
     }
   },
   directives: {
@@ -163,6 +157,7 @@ export default {
     saveData() {
       this.currentCellRowIndex = null
       this.currentCellColumnIndex = null
+      this.$store.commit('setChange', this.tableData)
     },
     getSelectedItems(items) {
       this.selectedItems = items
@@ -170,13 +165,13 @@ export default {
     add() {
       // (值类型和引用类型的区别)object对象每次添加都需要重新初始化，不能使用放在data中的初始数据，会被select视为同一个数据（单一次选中所有新行）？？？
       const row = {
-        department: '',
-        category: '',
+        department: '联通云',
+        category: '需求相应',
         content: '',
         effect: '',
         date: '',
-        support: '',
-        progress: ''
+        support: '无',
+        progress: '已完成'
       }
       this.tableData.push(row)
     },

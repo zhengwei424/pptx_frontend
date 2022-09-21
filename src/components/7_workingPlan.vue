@@ -1,6 +1,10 @@
 <template>
   <div class="workingPlan">
     <h3>下周工作计划</h3>
+    <div style="margin-bottom: 5px">
+      <el-button type="primary" @click="add">插入行</el-button>
+      <el-button type="danger" @click="dels">删除行</el-button>
+    </div>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
@@ -99,10 +103,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <div>
-      <el-button type="primary" @click="add">添加行</el-button>
-      <el-button type="danger" @click="dels">删除行</el-button>
-    </div>
   </div>
 </template>
 
@@ -114,15 +114,11 @@ export default {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
       selectedItems: [],
-      tableData: [
-        {
-          department: '',
-          category: '',
-          content: '',
-          progress: '',
-          next: '',
-        }
-      ]
+    }
+  },
+  computed: {
+    tableData() {
+      return this.$store.state.workingPlan
     }
   },
   directives: {
@@ -140,6 +136,7 @@ export default {
     saveData() {
       this.currentCellRowIndex = null
       this.currentCellColumnIndex = null
+      this.$store.commit('setWorkingPlan', this.tableData)
     },
     getSelectedItems(items) {
       this.selectedItems = items
