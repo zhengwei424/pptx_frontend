@@ -6,7 +6,7 @@
         :data="tableData"
         border
         style="width: 100%"
-        @cell-dblclick="dbclick"
+        @cell-click="click"
         :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
     >
       <el-table-column
@@ -311,7 +311,7 @@ export default {
     }
   },
   methods: {
-    dbclick(row, column) {
+    click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
     },

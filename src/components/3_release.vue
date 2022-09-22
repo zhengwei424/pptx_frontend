@@ -2,30 +2,31 @@
   <div class="release">
     <h3>支撑发版</h3>
     <div style="margin-bottom: 5px">
+      <el-button type="primary" @click="copy">复制行</el-button>
       <el-button type="primary" @click="add">插入行</el-button>
       <el-button type="danger" @click="dels">删除行</el-button>
     </div>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
         :data="tableData"
-        style="width: 100%"
+        style="min-width: 100%"
         border
-        @cell-dblclick="dbclick"
+        @cell-click="click"
         @selection-change="getSelectedItems"
         :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
     >
       <el-table-column
           type="selection"
-          width="55"
+          min-width="55"
       >
       </el-table-column>
       <el-table-column
           prop="department"
           label="专业"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.department"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -37,10 +38,10 @@
       <el-table-column
           prop="date"
           label="发版时间"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.date"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -52,10 +53,10 @@
       <el-table-column
           prop="count"
           label="次数"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.count"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -67,10 +68,10 @@
       <el-table-column
           prop="content"
           label="工作内容"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.content"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -82,10 +83,10 @@
       <el-table-column
           prop="exception"
           label="异常情况处理"
-          width="150"
+          min-width="150"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.exception"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -121,7 +122,7 @@ export default {
     }
   },
   methods: {
-    dbclick(row, column) {
+    click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
     },
@@ -132,6 +133,9 @@ export default {
     },
     getSelectedItems(items) {
       this.selectedItems = items
+    },
+    copy(){
+
     },
     add() {
       const row = {

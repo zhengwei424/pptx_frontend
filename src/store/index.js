@@ -87,62 +87,12 @@ const state = {
             Sun_afternoon: '',
         }
     ],
-    change: [
-        {
-            department: '联通云',
-            category: '需求相应',
-            content: '',
-            effect: '',
-            date: '',
-            support: '无',
-            progress: '已完成'
-        }
-    ],
-    release: [
-        {
-            department: '联通云',
-            date: '',
-            count: '1',
-            content: '配合发版',
-            exception: '无',
-        }
-    ],
-    permissionManagement: [
-        {
-            department: '联通云',
-            environment: '',
-            demander: '',
-            content: '',
-            progress: '已完成',
-        }
-    ],
-    cooperation: [
-        {
-            department: '联通云',
-            environment: '',
-            demander: '',
-            content: '',
-            progress: '已完成',
-        }
-    ],
-    problem: [
-        {
-            department: '联通云',
-            describe: '',
-            result: '已处理',
-            reason: '',
-            suggest: '无',
-        }
-    ],
-    workingPlan: [
-        {
-            department: '',
-            category: '',
-            content: '',
-            progress: '',
-            next: '',
-        }
-    ],
+    change: [],
+    release: [],
+    permissionManagement: [],
+    cooperation: [],
+    problem: [],
+    workingPlan: [],
     weeklyReports: [],
     monthlyReports: [],
 }

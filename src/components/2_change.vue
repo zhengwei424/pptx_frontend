@@ -2,6 +2,7 @@
   <div class="change">
     <h3>变更</h3>
     <div style="margin-bottom: 5px">
+      <el-button type="primary" @click="copy">复制行</el-button>
       <el-button type="primary" @click="add">插入行</el-button>
       <el-button type="danger" @click="dels">删除行</el-button>
     </div>
@@ -10,21 +11,21 @@
         :data="tableData"
         border
         style="width: 100%"
-        @cell-dblclick="dbclick"
+        @cell-click="click"
         @selection-change="getSelectedItems"
         :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
     >
       <el-table-column
           type="selection"
-          width="55"
+          min-width="55"
       ></el-table-column>
       <el-table-column
           prop="department"
           label="专业"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.department"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -36,10 +37,10 @@
       <el-table-column
           prop="category"
           label="变更类别"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.category"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -51,10 +52,10 @@
       <el-table-column
           prop="content"
           label="变更内容"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.content"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -66,10 +67,10 @@
       <el-table-column
           prop="effect"
           label="变更影响"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.effect"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -81,10 +82,10 @@
       <el-table-column
           prop="date"
           label="变更时间"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.date"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -96,10 +97,10 @@
       <el-table-column
           prop="support"
           label="资源支持"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.support"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -111,10 +112,10 @@
       <el-table-column
           prop="progress"
           label="目前进展"
-          width="100"
+          min-width="100"
       >
         <template slot-scope="scope">
-          <el-input type="text"
+          <el-input type="textarea"
                     v-model="scope.row.progress"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
@@ -150,7 +151,7 @@ export default {
     }
   },
   methods: {
-    dbclick(row, column) {
+    click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
     },
@@ -162,11 +163,14 @@ export default {
     getSelectedItems(items) {
       this.selectedItems = items
     },
+    copy() {
+
+    },
     add() {
       // (值类型和引用类型的区别)object对象每次添加都需要重新初始化，不能使用放在data中的初始数据，会被select视为同一个数据（单一次选中所有新行）？？？
       const row = {
         department: '联通云',
-        category: '需求相应',
+        category: '需求响应',
         content: '',
         effect: '',
         date: '',

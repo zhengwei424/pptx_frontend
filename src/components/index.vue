@@ -89,10 +89,15 @@ export default {
   methods: {
     onSubmit() {
       const weeklyData = JSON.stringify(this.$store.getters.weeklyData)
-      axios.post('xxxxx', weeklyData)
-          .then(res=>{
-            console.log(res)
-          })
+      console.log(weeklyData)
+      axios.create({
+        baseURL: ' http://192.168.10.168:5000',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        withCredentials: true
+      }).post('/weeklyReportsData', weeklyData)
     }
   }
 }
