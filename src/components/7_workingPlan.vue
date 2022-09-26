@@ -168,6 +168,7 @@ export default {
 h3 {
   color: rgb(0, 0, 0, 0.7);
 }
+
 .workingPlan {
   margin: 10px 0;
   padding: 10px;

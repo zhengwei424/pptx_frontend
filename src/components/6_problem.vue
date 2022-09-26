@@ -121,7 +121,7 @@ export default {
     }
   },
   methods: {
-    dbclick(row, column) {
+    click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
     },

@@ -4,7 +4,7 @@
     <div style="margin-bottom: 5px">
       <el-button type="primary" @click="copy">复制行</el-button>
       <el-button type="primary" @click="add">插入行</el-button>
-      <el-button type="danger" @click="dels">删除行</el-button>
+      <el-button type="danger" @click="del">删除行</el-button>
     </div>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
@@ -27,9 +27,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.department"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-if="this.showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.department }}</span>
         </template>
@@ -44,7 +45,8 @@
                     v-model="scope.row.category"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.category }}</span>
         </template>
@@ -59,7 +61,8 @@
                     v-model="scope.row.content"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.content }}</span>
         </template>
@@ -74,7 +77,8 @@
                     v-model="scope.row.effect"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.effect }}</span>
         </template>
@@ -89,7 +93,8 @@
                     v-model="scope.row.date"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.date }}</span>
         </template>
@@ -104,7 +109,8 @@
                     v-model="scope.row.support"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.support }}</span>
         </template>
@@ -119,7 +125,8 @@
                     v-model="scope.row.progress"
                     v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
           <span v-else>{{ scope.row.progress }}</span>
         </template>
@@ -141,30 +148,91 @@ export default {
   computed: {
     tableData() {
       return this.$store.state.change
+    },
+    showCell() {
+      let tmp = {}
+      tmp['r' + this.currentCellRowIndex + 'c' + this.currentCellColumnIndex] = true
+      return tmp
     }
   },
-  directives: {
-    focus: {
-      inserted: function (el) {
-        el.querySelector('input').focus()
-      }
-    }
-  },
+  // 自定义focus指令
+  // directives: {
+  //   focus: {
+  //     inserted: function (el) {
+  //       el.querySelector('input').focus()
+  //     }
+  //   }
+  // },
   methods: {
     click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
+      // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
+      this.$nextTick(() => {
+        this.$refs['r' + row.index + 'c' + column.index].focus()
+      })
+
+    },
+    keyup(event) {
+      // 表的可编辑部分总行数
+      let rowCount = this.tableData.length
+      // 表的可编辑部分总列数
+      const colCount = 7
+      const action = event.key
+      switch (action) {
+        case 'ArrowUp': {
+          this.currentCellRowIndex--
+          if (this.currentCellRowIndex < 0) {
+            this.currentCellRowIndex = rowCount - 1
+          }
+          break
+        }
+        case 'ArrowDown': {
+          this.currentCellRowIndex++
+          if (this.currentCellRowIndex >= rowCount) {
+            this.currentCellRowIndex = 0
+          }
+          break
+        }
+        case 'ArrowLeft': {
+          this.currentCellColumnIndex--
+          if (this.currentCellColumnIndex < 0) {
+            this.currentCellColumnIndex = colCount - 1
+          }
+          break
+        }
+        case 'ArrowRight': {
+          this.currentCellColumnIndex++
+          if (this.currentCellColumnIndex >= 7) {
+            this.currentCellColumnIndex = 0
+          }
+          break
+        }
+        default: {
+          break
+        }
+      }
+
+      this.$nextTick(() => {
+        this.$refs['r' + this.currentCellRowIndex + 'c' + this.currentCellColumnIndex].focus()
+      })
     },
     saveData() {
       this.currentCellRowIndex = null
       this.currentCellColumnIndex = null
+      this.showCell = {}
       this.$store.commit('setChange', this.tableData)
     },
     getSelectedItems(items) {
       this.selectedItems = items
     },
     copy() {
-
+      for (const item of this.selectedItems) {
+        // 深度拷贝
+        // JSON.parse(JSON.stringify(ary))
+        // JSON.parse(JSON.stringify(obj))
+        this.tableData.push(JSON.parse(JSON.stringify(item)))
+      }
     },
     add() {
       // (值类型和引用类型的区别)object对象每次添加都需要重新初始化，不能使用放在data中的初始数据，会被select视为同一个数据（单一次选中所有新行）？？？
@@ -179,7 +247,7 @@ export default {
       }
       this.tableData.push(row)
     },
-    dels() {
+    del() {
       for (const item of this.selectedItems) {
         this.tableData.splice(item.index, 1)
       }
