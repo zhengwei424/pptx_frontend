@@ -24,15 +24,16 @@
           label="专业"
           min-width="100"
       >
+        <!--v-if和refs冲突，不能同时使用-->
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.department"
-                    v-if="this.showCell['r'+scope.row.index+'c'+scope.column.index]"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.department }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.department }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -43,12 +44,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.category"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.category }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -59,12 +60,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.content"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.content }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -75,12 +76,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.effect"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.effect }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.effect }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -91,12 +92,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.date"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.date }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.date }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -107,12 +108,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.support"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.support }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.support }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -123,12 +124,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.progress"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
+                    v-show="showCell[currentCell]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.progress }}</span>
+          <span v-show="!showCell[currentCell]">{{ scope.row.progress }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -142,17 +143,27 @@ export default {
     return {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
+      currentCell: null,
       selectedItems: [],
+      showCell: {}
     }
   },
   computed: {
     tableData() {
       return this.$store.state.change
-    },
-    showCell() {
-      let tmp = {}
-      tmp['r' + this.currentCellRowIndex + 'c' + this.currentCellColumnIndex] = true
-      return tmp
+    }
+  },
+  watch: {
+    'tableData.length': {
+      handler() {
+        for (let i = 0; i < this.tableData.length; i++) {
+          // 因为第一列是select，tableData从第二列开始
+          for (let j = 1; j < 8; j++) {
+            this.showCell['r' + i + 'c' + j] = false
+          }
+        }
+        console.log(this.showCell)
+      }
     }
   },
   // 自定义focus指令
@@ -164,15 +175,27 @@ export default {
   //   }
   // },
   methods: {
+    // 鼠标获取cell焦点
     click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
+      this.currentCell = 'r' + row.index + 'c' + column.index
+      this.showCell[this.currentCell] = true
       // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
       this.$nextTick(() => {
-        this.$refs['r' + row.index + 'c' + column.index].focus()
+        console.log(this.currentCell)
+        this.$refs[this.currentCell].focus()
+        console.log(this.$refs[this.currentCell])
       })
-
     },
+    // 鼠标失去cell焦点保存数据
+    saveData() {
+      this.showCell[this.currentCell] = false
+      // this.currentCellRowIndex = null
+      // this.currentCellColumnIndex = null
+      this.$store.commit('setChange', this.tableData)
+    },
+    // 鼠标获取一个cell焦点之后，键盘控制el-input
     keyup(event) {
       // 表的可编辑部分总行数
       let rowCount = this.tableData.length
@@ -181,30 +204,30 @@ export default {
       const action = event.key
       switch (action) {
         case 'ArrowUp': {
-          this.currentCellRowIndex--
+          this.currentCellRowIndex -= 1
           if (this.currentCellRowIndex < 0) {
             this.currentCellRowIndex = rowCount - 1
           }
           break
         }
         case 'ArrowDown': {
-          this.currentCellRowIndex++
+          this.currentCellRowIndex += 1
           if (this.currentCellRowIndex >= rowCount) {
             this.currentCellRowIndex = 0
           }
           break
         }
         case 'ArrowLeft': {
-          this.currentCellColumnIndex--
-          if (this.currentCellColumnIndex < 0) {
-            this.currentCellColumnIndex = colCount - 1
+          this.currentCellColumnIndex -= 1
+          if (this.currentCellColumnIndex < 1) {
+            this.currentCellColumnIndex = colCount
           }
           break
         }
         case 'ArrowRight': {
-          this.currentCellColumnIndex++
-          if (this.currentCellColumnIndex >= 7) {
-            this.currentCellColumnIndex = 0
+          this.currentCellColumnIndex += 1
+          if (this.currentCellColumnIndex > 7) {
+            this.currentCellColumnIndex = 1
           }
           break
         }
@@ -214,14 +237,8 @@ export default {
       }
 
       this.$nextTick(() => {
-        this.$refs['r' + this.currentCellRowIndex + 'c' + this.currentCellColumnIndex].focus()
+        this.$refs[this.currentCell].focus()
       })
-    },
-    saveData() {
-      this.currentCellRowIndex = null
-      this.currentCellColumnIndex = null
-      this.showCell = {}
-      this.$store.commit('setChange', this.tableData)
     },
     getSelectedItems(items) {
       this.selectedItems = items
