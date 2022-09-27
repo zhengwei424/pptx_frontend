@@ -26,14 +26,16 @@
       >
         <!--v-if和refs冲突，不能同时使用-->
         <template slot-scope="scope">
-          <el-input type="textarea"
-                    v-model="scope.row.department"
-                    v-show="showCell[currentCell]"
-                    @blur="saveData"
-                    @keyup.native="keyup"
-                    :ref="'r'+scope.row.index+'c'+scope.column.index"
-          />
-          <span v-show="!showCell[currentCell]">{{ scope.row.department }}</span>
+          <div :ref="'r'+scope.row.index+'c'+scope.column.index">
+            <el-input type="textarea"
+                      v-model="scope.row.department"
+                      v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
+                      @blur="saveData"
+                      @keyup.native="keyup"
+
+            />
+            <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.department }}</span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -44,12 +46,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.category"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.category }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -60,12 +62,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.content"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.content }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -76,12 +78,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.effect"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.effect }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.effect }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -92,12 +94,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.date"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.date }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.date }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -108,12 +110,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.support"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.support }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.support }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -124,12 +126,12 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.progress"
-                    v-show="showCell[currentCell]"
+                    v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell[currentCell]">{{ scope.row.progress }}</span>
+          <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.progress }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -145,7 +147,7 @@ export default {
       currentCellColumnIndex: null,
       currentCell: null,
       selectedItems: [],
-      showCell: {}
+      showCell: {},
     }
   },
   computed: {
@@ -155,16 +157,14 @@ export default {
   },
   watch: {
     'tableData.length': {
+      immediate: true,
       handler() {
-        for (let i = 0; i < this.tableData.length; i++) {
-          // 因为第一列是select，tableData从第二列开始
-          for (let j = 1; j < 8; j++) {
-            this.showCell['r' + i + 'c' + j] = false
-          }
-        }
-        console.log(this.showCell)
+        this.initShowCell()
       }
     }
+  },
+  updated() {
+    this.initShowCell()
   },
   // 自定义focus指令
   // directives: {
@@ -175,24 +175,35 @@ export default {
   //   }
   // },
   methods: {
+    // 初始化showCell
+    initShowCell() {
+      for (let i = 0; i < this.tableData.length; i++) {
+        // 因为第一列是select，tableData从第二列开始
+        for (let j = 1; j < 8; j++) {
+          this.showCell['r' + i + 'c' + j] = false
+        }
+      }
+    },
     // 鼠标获取cell焦点
     click(row, column) {
-      this.currentCellRowIndex = row.index
-      this.currentCellColumnIndex = column.index
-      this.currentCell = 'r' + row.index + 'c' + column.index
-      this.showCell[this.currentCell] = true
-      // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
-      this.$nextTick(() => {
-        console.log(this.currentCell)
-        this.$refs[this.currentCell].focus()
-        console.log(this.$refs[this.currentCell])
+      const that = this
+      that.currentCellRowIndex = row.index
+      that.currentCellColumnIndex = column.index
+      that.currentCell = 'r' + row.index + 'c' + column.index
+      that.showCell[that.currentCell] = true
+      // console.log("鼠标点击:", this.showCell)
+      // this.$refs.r0c1.focus()
+      // // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
+      that.$nextTick(() => {
+        that.$refs[that.showCell].focus()
+        console.log(this.$refs.r0c1)
       })
+
     },
     // 鼠标失去cell焦点保存数据
     saveData() {
-      this.showCell[this.currentCell] = false
-      // this.currentCellRowIndex = null
-      // this.currentCellColumnIndex = null
+      this.initShowCell()
+      console.log("失去焦点：", this.showCell)
       this.$store.commit('setChange', this.tableData)
     },
     // 鼠标获取一个cell焦点之后，键盘控制el-input
