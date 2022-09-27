@@ -26,15 +26,17 @@
       >
         <!--v-if和refs冲突，不能同时使用-->
         <template slot-scope="scope">
-          <div :ref="'r'+scope.row.index+'c'+scope.column.index">
+          <div>
             <el-input type="textarea"
                       v-model="scope.row.department"
                       v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
                       @blur="saveData"
                       @keyup.native="keyup"
-
+                      :ref="'r'+scope.row.index+'c'+scope.column.index"
             />
-            <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{ scope.row.department }}</span>
+            <span v-show="showCell['r'+scope.row.index+'c'+scope.column.index] !== true">{{
+                scope.row.department
+              }}</span>
           </div>
         </template>
       </el-table-column>
@@ -146,25 +148,32 @@ export default {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
       currentCell: null,
-      selectedItems: [],
-      showCell: {},
+      selectedItems: []
     }
   },
   computed: {
     tableData() {
       return this.$store.state.change
+    },
+    showCell: {
+      get() {
+        // 直接返回getter，showCell===initShowChangeCell，不利于showCell重新初始化
+        return this.$store.getters.initShowChangeCell
+      },
+      set(newValue) {
+        return newValue
+      }
     }
   },
   watch: {
     'tableData.length': {
       immediate: true,
       handler() {
-        this.initShowCell()
+        console.log(this.tableData)
+        this.$store.commit('setChange', this.tableData)
+        console.log(this.showCell)
       }
     }
-  },
-  updated() {
-    this.initShowCell()
   },
   // 自定义focus指令
   // directives: {
@@ -174,16 +183,13 @@ export default {
   //     }
   //   }
   // },
+  updated() {
+    console.log("update: ", this.showCell)
+  },
+  mounted() {
+    console.log("mounted: ", this.showCell)
+  },
   methods: {
-    // 初始化showCell
-    initShowCell() {
-      for (let i = 0; i < this.tableData.length; i++) {
-        // 因为第一列是select，tableData从第二列开始
-        for (let j = 1; j < 8; j++) {
-          this.showCell['r' + i + 'c' + j] = false
-        }
-      }
-    },
     // 鼠标获取cell焦点
     click(row, column) {
       const that = this
@@ -191,19 +197,19 @@ export default {
       that.currentCellColumnIndex = column.index
       that.currentCell = 'r' + row.index + 'c' + column.index
       that.showCell[that.currentCell] = true
-      // console.log("鼠标点击:", this.showCell)
-      // this.$refs.r0c1.focus()
-      // // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
-      that.$nextTick(() => {
-        that.$refs[that.showCell].focus()
-        console.log(this.$refs.r0c1)
-      })
+      that.$refs[that.currentCell].focus()
+      // // console.log("鼠标点击:", this.showCell)
+      // // this.$refs.r0c1.focus()
+      // // // 解决el-input的type为textarea时，单击表格无法自动focus（自定义focus指令）的问题
+      // that.$nextTick(() => {
+      //   that.$refs[that.showCell].focus()
+      //   console.log(this.$refs[that.showCell])
+      // })
+      console.log(this.showCell)
 
     },
     // 鼠标失去cell焦点保存数据
     saveData() {
-      this.initShowCell()
-      console.log("失去焦点：", this.showCell)
       this.$store.commit('setChange', this.tableData)
     },
     // 鼠标获取一个cell焦点之后，键盘控制el-input
