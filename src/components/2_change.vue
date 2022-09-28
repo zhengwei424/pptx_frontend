@@ -30,14 +30,11 @@
             <el-input type="textarea"
                       v-model="scope.row.department"
                       v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                      :key="shortID.generate()"
                       @blur="saveData"
                       @keyup.native="keyup"
                       :ref="'r'+scope.row.index+'c'+scope.column.index"
             />
-            <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]" :key="shortID.generate()">{{
-                scope.row.department
-              }}</span>
+            <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.department }}</span>
           </div>
         </template>
       </el-table-column>
@@ -50,108 +47,91 @@
           <el-input type="textarea"
                     v-model="scope.row.category"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.category }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="content"
           label="变更内容"
           min-width="100"
-          :key="2"
       >
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.content"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.content }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="effect"
           label="变更影响"
           min-width="100"
-          :key="3"
       >
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.effect"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.effect }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.effect }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="date"
           label="变更时间"
           min-width="100"
-          :key="4"
       >
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.date"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.date }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.date }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="support"
           label="资源支持"
           min-width="100"
-          :key="5"
       >
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.support"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.support }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.support }}</span>
         </template>
       </el-table-column>
       <el-table-column
           prop="progress"
           label="目前进展"
           min-width="100"
-          :key="6"
       >
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.progress"
                     v-show="showCell['r'+scope.row.index+'c'+scope.column.index]"
-                    :key="shortID.generate()"
                     @blur="saveData"
                     @keyup.native="keyup"
                     :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]"
-                :key="shortID.generate()">{{ scope.row.progress }}</span>
+          <span v-show="!showCell['r'+scope.row.index+'c'+scope.column.index]">{{ scope.row.progress }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -166,8 +146,9 @@ export default {
       currentCellRowIndex: null,
       currentCellColumnIndex: null,
       selectedItems: [],
+      // currentCell: null,
       // 不能放在compute中，v-show会无效
-      showCell: this.$store.getters.initShowChangeCell
+      // showCell: this.$store.getters.initShowChangeCell
     }
   },
   computed: {
@@ -182,16 +163,25 @@ export default {
       set(newValue) {
         return newValue
       }
+    },
+    showCell: {
+      get() {
+        return this.$store.getters.initShowChangeCell
+      }
     }
   },
-  // watch: {
-  //   'tableData.length': {
-  //     immediate: true,
-  //     handler() {
-  //
-  //     }
-  //   }
-  // },
+  watch: {
+    // 当tableData长度变化时，向vuex提交数据，初始化的showCell
+    'tableData.length': {
+      immediate: true,
+      handler() {
+        console.log("watch================================")
+        this.$store.commit('setChange', this.tableData)
+        console.log("watch1:", this.$store.getters.initShowChangeCell)
+        console.log("watch2:", this.showCell)
+      }
+    }
+  },
   // 自定义focus指令
   // directives: {
   //   focus: {
@@ -215,58 +205,95 @@ export default {
     // 鼠标获取cell焦点
     click(row, column) {
       const that = this
+      console.log("click1:", that.showCell)
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
-      this.showCell[this.currentCell] = true
-      // that.$set(that.showCell, that.currentCell, true)
+      // 需要这样赋值，否则不起作用
+      that.$set(that.showCell, that.currentCell, true)
       this.$nextTick(() => {
         that.$refs[that.currentCell].focus()
       })
+      console.log("click2:", that.showCell)
     },
     // 鼠标失去cell焦点保存数据
     saveData() {
-      this.showCell[this.currentCell] = false
+      this.$set(this.showCell, this.currentCell, false)
       this.$store.commit('setChange', this.tableData)
     },
     // 鼠标获取一个cell焦点之后，键盘控制el-input
     keyup(event) {
-      console.log(event)
-      // // 表的可编辑部分总行数
-      // let rowCount = this.tableData.length
-      // // 表的可编辑部分总列数
-      // const colCount = 7
-      // const action = event.key
-      // switch (action) {
-      //   case 'ArrowUp': {
-      //     this.currentCellRowIndex -= 1
-      //     if (this.currentCellRowIndex < 0) {
-      //       this.currentCellRowIndex = rowCount - 1
-      //     }
-      //     break
-      //   }
-      //   case 'ArrowDown': {
-      //     this.currentCellRowIndex += 1
-      //     if (this.currentCellRowIndex >= rowCount) {
-      //       this.currentCellRowIndex = 0
-      //     }
-      //     break
-      //   }
-      //   case 'ArrowLeft': {
-      //     this.currentCellColumnIndex -= 1
-      //     if (this.currentCellColumnIndex < 1) {
-      //       this.currentCellColumnIndex = colCount
-      //     }
-      //     break
-      //   }
-      //   case 'ArrowRight': {
-      //     this.currentCellColumnIndex += 1
-      //     if (this.currentCellColumnIndex > 7) {
-      //       this.currentCellColumnIndex = 1
-      //     }
-      //     break
-      //   }
-      // }
-      // console.log("haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+      const that = this
+      // 表的可编辑部分总行数
+      let rowCount = this.tableData.length
+      // 表的可编辑部分总列数
+      const colCount = 7
+      const action = event.key
+      switch (action) {
+        case 'ArrowUp': {
+          that.$set(that.showCell, that.currentCell, false)
+          console.log("currentCell1:", that.currentCell)
+          console.log("up1:", that.showCell[that.currentCell])
+          console.log("up1-showCell:", that.showCell)
+          this.currentCellRowIndex -= 1
+          if (this.currentCellRowIndex < 0) {
+            this.currentCellRowIndex = rowCount - 1
+          }
+          that.$set(that.showCell, that.currentCell, true)
+          console.log("currentCell2:", that.currentCell)
+          console.log("up2:", that.showCell[that.currentCell])
+          console.log("up2-showCell:", that.showCell)
+          break
+        }
+        case 'ArrowDown': {
+          that.$set(that.showCell, that.currentCell, false)
+          this.currentCellRowIndex += 1
+          if (this.currentCellRowIndex >= rowCount) {
+            this.currentCellRowIndex = 0
+          }
+          that.$set(that.showCell, that.currentCell, true)
+          break
+        }
+        case 'ArrowLeft': {
+          that.$set(that.showCell, that.currentCell, false)
+          this.currentCellColumnIndex -= 1
+          if (this.currentCellColumnIndex < 1) {
+            this.currentCellColumnIndex = colCount
+          }
+          that.$set(that.showCell, that.currentCell, true)
+          break
+        }
+        case 'ArrowRight': {
+          that.$set(that.showCell, that.currentCell, false)
+          this.currentCellColumnIndex += 1
+          if (this.currentCellColumnIndex > 7) {
+            this.currentCellColumnIndex = 1
+          }
+          that.$set(that.showCell, that.currentCell, true)
+          break
+        }
+        case 'Tab': {
+          that.$set(that.showCell, that.currentCell, false)
+          this.currentCellColumnIndex += 1
+          if (this.currentCellColumnIndex > 7) {
+            this.currentCellColumnIndex = 1
+            this.currentCellRowIndex += 1
+            if (this.currentCellRowIndex >= rowCount) {
+              this.currentCellRowIndex = 0
+            }
+          }
+          that.$set(that.showCell, that.currentCell, true)
+          break
+        }
+        default: {
+          break
+        }
+      }
+      console.log(that.currentCell)
+      console.log(that.$refs[that.currentCell])
+      console.log(that.showCell)
+      this.$nextTick(() => {
+        that.$refs[that.currentCell].focus()
+      })
     },
     getSelectedItems(items) {
       this.selectedItems = items

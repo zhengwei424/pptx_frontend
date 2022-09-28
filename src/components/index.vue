@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-collapse accordion>
+    <el-collapse v-model="activeNames" accordion>
       <el-collapse-item title="周报" name="1">
         <inspect></inspect>
         <change></change>
@@ -79,6 +79,7 @@ export default {
   },
   data() {
     return {
+      activeNames: ['1'],
       formData: {
         year: '2022',
         month: '',
