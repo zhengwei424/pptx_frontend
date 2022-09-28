@@ -23,7 +23,6 @@
           prop="department"
           label="所属专业"
           min-width="100"
-          :key=
       >
         <template slot-scope="scope">
           <el-input type="textarea"
