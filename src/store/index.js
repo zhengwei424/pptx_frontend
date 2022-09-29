@@ -108,18 +108,7 @@ const getters = {
             problem: state.problem,
             workingPlan: state.workingPlan,
         }
-    },
-    // 初始化数据，用于变更的v-show
-    initShowChangeCell(state) {
-        let tmp = {}
-        for (let i = 0; i < state.change.length; i++) {
-            // 因为第一列是select，tableData从第二列开始
-            for (let j = 1; j < 8; j++) {
-                tmp['r' + i + 'c' + j] = false
-            }
-        }
-        return tmp
-    },
+    }
 }
 
 export default new Vuex.Store({
