@@ -4,7 +4,7 @@
     <div style="margin-bottom: 5px">
       <el-button type="primary" @click="copy">复制行</el-button>
       <el-button type="primary" @click="add">插入行</el-button>
-      <el-button type="danger" @click="dels">删除行</el-button>
+      <el-button type="danger" @click="del">删除行</el-button>
     </div>
     <!--cell-class-name会在row和column中生成index字段-->
     <el-table
@@ -13,7 +13,7 @@
         border
         @cell-click="click"
         @selection-change="getSelectedItems"
-        :cell-class-name="({ row, column, rowIndex, columnIndex }) => ((row.index = rowIndex), (column.index = columnIndex))"
+        :cell-class-name="setCellClassName"
     >
       <el-table-column
           type="selection"
@@ -36,11 +36,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.department"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.department }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -51,11 +50,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.category"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.category }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -66,11 +64,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.content"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.content }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -81,11 +78,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.progress"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.progress }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -96,11 +92,10 @@
         <template slot-scope="scope">
           <el-input type="textarea"
                     v-model="scope.row.next"
-                    v-if="scope.row.index === currentCellRowIndex && scope.column.index === currentCellColumnIndex"
                     @blur="saveData"
-                    v-focus
+                    @keyup.native="keyup"
+                    :ref="'r'+scope.row.index+'c'+scope.column.index"
           />
-          <span v-else>{{ scope.row.next }}</span>
         </template>
       </el-table-column>
     </el-table>
@@ -122,28 +117,92 @@ export default {
       return this.$store.state.workingPlan
     }
   },
-  directives: {
-    focus: {
-      inserted: function (el) {
-        el.querySelector('input').focus()
-      }
-    }
-  },
+  // directives: {
+  //   focus: {
+  //     inserted: function (el) {
+  //       el.querySelector('input').focus()
+  //     }
+  //   }
+  // },
   methods: {
+    // 此处只是给row和column加一个索引index，不设置class name，如果需要自定义class name，return一个字符串即可
+    setCellClassName({ row, column, rowIndex, columnIndex }) {
+      row.index = rowIndex
+      column.index = columnIndex
+    },
     click(row, column) {
       this.currentCellRowIndex = row.index
       this.currentCellColumnIndex = column.index
     },
     saveData() {
-      this.currentCellRowIndex = null
-      this.currentCellColumnIndex = null
       this.$store.commit('setWorkingPlan', this.tableData)
+    },
+    // 鼠标获取一个cell焦点之后，键盘控制el-input
+    keyup(event) {
+      const that = this
+      // 表的可编辑部分总行数
+      let rowCount = this.tableData.length
+      // 最后一列索引值
+      const colMaxIndex = 6
+      const action = event.key
+      switch (action) {
+        case 'ArrowUp': {
+          this.currentCellRowIndex -= 1
+          if (this.currentCellRowIndex < 0) {
+            this.currentCellRowIndex = rowCount - 1
+          }
+          break
+        }
+        case 'ArrowDown': {
+          this.currentCellRowIndex += 1
+          if (this.currentCellRowIndex >= rowCount) {
+            this.currentCellRowIndex = 0
+          }
+          break
+        }
+        case 'ArrowLeft': {
+          this.currentCellColumnIndex -= 1
+          if (this.currentCellColumnIndex < 2) {
+            this.currentCellColumnIndex = colMaxIndex
+          }
+          break
+        }
+        case 'ArrowRight': {
+          this.currentCellColumnIndex += 1
+          if (this.currentCellColumnIndex > colMaxIndex) {
+            this.currentCellColumnIndex = 2
+          }
+          break
+        }
+        case 'Tab': {
+          this.currentCellColumnIndex += 1
+          if (this.currentCellColumnIndex > colMaxIndex) {
+            this.currentCellRowIndex += 1
+            this.currentCellColumnIndex = 2
+            if (this.currentCellRowIndex >= rowCount) {
+              this.currentCellRowIndex = 0
+            }
+          }
+          break
+        }
+        default: {
+          break
+        }
+      }
+      this.$nextTick(() => {
+        that.$refs['r'+that.currentCellRowIndex+'c'+that.currentCellColumnIndex].focus()
+      })
     },
     getSelectedItems(items) {
       this.selectedItems = items
     },
     copy() {
-
+      for (const item of this.selectedItems) {
+        // 深度拷贝
+        // JSON.parse(JSON.stringify(ary))
+        // JSON.parse(JSON.stringify(obj))
+        this.tableData.push(JSON.parse(JSON.stringify(item)))
+      }
     },
     add() {
       const row = {
@@ -155,7 +214,7 @@ export default {
       }
       this.tableData.push(row)
     },
-    dels() {
+    del() {
       for (const item of this.selectedItems) {
         this.tableData.splice(item.index, 1)
       }

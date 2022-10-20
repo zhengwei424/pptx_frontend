@@ -12,6 +12,7 @@
       ></el-table-column>
       <el-table-column
           prop="name"
+          sortable
           label="月报"
           width="180">
       </el-table-column>
@@ -39,6 +40,7 @@
 <script>
 import {Message} from "element-ui";
 import axios from "axios";
+import Vue from "vue";
 
 export default {
   name: "MonthlyReports",
@@ -67,6 +69,7 @@ export default {
   },
   methods: {
     file_upload(resp) {
+      this.refresh()
       Message({
         message: resp.msg,
         type: 'success',
@@ -75,11 +78,14 @@ export default {
     },
     download() {
       this.selectedItems.map(item => {
-        const url = `http://192.168.10.168:5000/monthlyReports/download/${item.name}`
+        const url = `${Vue.prototype.VUE_APP_BACKEND_URL}/monthlyReports/download/${item.name}`
         return new Promise((resolve, reject) => {
-          axios.get(url).then((response) => {
+          axios.get(url,{responseType: 'blob'}).then((response) => {
             // Blob是一个不可变的、原始数据的类文件对象，它的数据可以按文本或二进制的格式进行读取，也可以转换成 ReadableStream 来用于数据操作。
-            let blob = new Blob([response.data])
+            let blob = new Blob([response.data],{
+              // pptx的MIME Type, （linux可以通过file -i <filename>查看文件MIME Type）
+              type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            })
             const link = document.createElement('a')
             link.download = item.name
             link.style.display = 'none'
@@ -88,8 +94,14 @@ export default {
             link.click()
             URL.revokeObjectURL(link.href)
             document.body.removeChild(link)
+            this.$message({
+              message: item.name + "下载成功",
+              type: 'success'
+            });
             resolve()
           }).catch(error => {
+            this.$message.error(item.name + "文件下载失败")
+            console.log("文件下载失败: " + error)
             reject(error)
           })
         })

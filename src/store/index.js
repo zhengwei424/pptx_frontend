@@ -8,7 +8,7 @@ const actions = {
     getWeeklyReports(context) {
         new Promise((resolve, reject) => {
             axios.get(
-                "http://192.168.10.168:5000/weeklyReports",
+                Vue.prototype.VUE_APP_BACKEND_URL + "/weeklyReports",
             ).then(response => {
                 const {data} = response
                 context.commit('GETWEEKLYREPORTS', data)
@@ -21,7 +21,7 @@ const actions = {
     getMonthlyReports(context) {
         new Promise((resolve, reject) => {
             axios.get(
-                "http://192.168.10.168:5000/monthlyReports",
+                Vue.prototype.VUE_APP_BACKEND_URL + "/monthlyReports",
             ).then(response => {
                 const {data} = response
                 context.commit('GETMONTHLYREPORTS', data)

@@ -12,6 +12,7 @@
       ></el-table-column>
       <el-table-column
           prop="name"
+          sortable
           label="周报"
           width="180">
       </el-table-column>
@@ -32,6 +33,7 @@
       <!--文件下载-->
       <el-button class="download" type="primary" @click="download">下载</el-button>
       <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
+      <el-button class="create" type="primary" @click="create">合成月报</el-button>
     </div>
   </div>
 </template>
@@ -39,13 +41,14 @@
 <script>
 import {Message} from "element-ui"
 import axios from "axios";
+import Vue from "vue";
 
 export default {
   name: "WeeklyReports",
   data() {
     return {
       // 上传地址
-      url: "http://192.168.10.168:5000/weeklyReports/upload",
+      url: Vue.prototype.VUE_APP_BACKEND_URL + "/weeklyReports/upload",
       // 上传文件的文件名
       filename: null,
       // 文件上传是附带的额外参数
@@ -67,6 +70,7 @@ export default {
   },
   methods: {
     file_upload(resp) {
+      this.refresh()
       Message({
         message: resp.msg,
         type: 'success',
@@ -75,11 +79,14 @@ export default {
     },
     download() {
       this.selectedItems.map(item => {
-        const url = `http://192.168.10.168:5000/weeklyReports/download/${item.name}`
+        const url = `${Vue.prototype.VUE_APP_BACKEND_URL}/weeklyReports/download/${item.name}`
         return new Promise((resolve, reject) => {
-          axios.get(url).then((response) => {
+          axios.get(url, {responseType: 'blob'}).then((response) => {
             // Blob是一个不可变的、原始数据的类文件对象，它的数据可以按文本或二进制的格式进行读取，也可以转换成 ReadableStream 来用于数据操作。
-            let blob = new Blob([response.data])
+            let blob = new Blob([response.data], {
+              // pptx的MIME Type, （linux可以通过file -i <filename>查看文件MIME Type）
+              type: "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            })
             const link = document.createElement('a')
             link.download = item.name
             link.style.display = 'none'
@@ -88,21 +95,45 @@ export default {
             link.click()
             URL.revokeObjectURL(link.href)
             document.body.removeChild(link)
+            this.$message({
+              message: item.name + "下载成功",
+              type: 'success'
+            });
             resolve()
           }).catch(error => {
+            this.$message.error(item.name + "文件下载失败")
+            console.log("文件下载失败: " + error)
             reject(error)
           })
         })
       })
-      // Promise.all(queue).then(result => {
-      //   console.log(result)
-      // })
     },
     refresh() {
       this.$store.dispatch('getWeeklyReports')
     },
     getSelectedItems(items) {
       this.selectedItems = items
+    },
+    create() {
+      const url = Vue.prototype.VUE_APP_BACKEND_URL + "/monthlyReportsData"
+      let weekly_reports = []
+      for (const item of this.selectedItems) {
+        weekly_reports.push(item.name)
+      }
+      console.log(weekly_reports)
+      axios.post(url, weekly_reports).then(response => {
+        if (response.data.code === 0) {
+          this.$message({
+            message: response.data.msg,
+            type: 'success'
+          });
+        } else if (response.data.code === 1) {
+          this.$message.error(response.data.msg)
+        }
+        this.$store.dispatch('getMonthlyReports')
+      }).catch(err => {
+        this.$message.error(err)
+      })
     }
   }
 }
