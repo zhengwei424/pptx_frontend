@@ -15,12 +15,7 @@
       <el-form :inline="true" :model="formData">
         <el-form-item>
           <!--v-model的值就是默认选项-->
-          <el-select v-model="formData.year" placeholder="年">
-            <el-option label="2022年" value="2022"></el-option>
-            <el-option label="2023年" value="2023"></el-option>
-            <el-option label="2024年" value="2024"></el-option>
-            <el-option label="2025年" value="2025"></el-option>
-          </el-select>
+          <el-input v-model="formData.year" placeholder="年"></el-input>
         </el-form-item>
         <el-form-item>
           <el-select v-model="formData.month" placeholder="月">
@@ -57,21 +52,23 @@
     </div>
     <weekly-reports></weekly-reports>
     <monthly-reports></monthly-reports>
+    <monthly-summary-reports></monthly-summary-reports>
   </div>
 </template>
 
 <script>
-import Inspect from '@/components/1_inspect'
-import Change from '@/components/2_change'
-import Release from '@/components/3_release'
-import PermissionManagement from '@/components/4_permissionManagement'
-import Cooperation from '@/components/5_cooperation'
-import Problem from '@/components/6_problem'
-import WorkingPlan from '@/components/7_workingPlan'
-import WeeklyReports from '@/components/8_weeklyReports'
-import MonthlyReports from '@/components/9_monthlyReports'
+import Inspect from './1_inspect'
+import Change from './2_change'
+import Release from './3_release'
+import PermissionManagement from './4_permissionManagement'
+import Cooperation from './5_cooperation'
+import Problem from './6_problem'
+import WorkingPlan from './7_workingPlan'
+import WeeklyReports from './8_weeklyReports'
+import MonthlyReports from './9_monthlyReports'
+import MonthlySummaryReports from './10_monthlySummaryReports'
 import axios from 'axios'
-import Vue from "vue";
+import Vue from 'vue'
 
 export default {
   name: "Reports",
@@ -84,13 +81,14 @@ export default {
     Problem,
     WorkingPlan,
     WeeklyReports,
-    MonthlyReports
+    MonthlyReports,
+    MonthlySummaryReports
   },
   data() {
     return {
       activeNames: ['1'],
       formData: {
-        year: '2022',
+        year: (new Date()).getFullYear().toString(),
         month: '',
         week: ''
       }
@@ -99,9 +97,8 @@ export default {
   methods: {
     onSubmit() {
       const weeklyData = this.$store.getters.weeklyData
-      console.log(weeklyData)
       axios.create({
-        baseURL: Vue.prototype.VUE_APP_BACKEND_URL,
+        baseURL: Vue.prototype.BACKEND_BASE_URL,
         headers: {
           'Content-Type': 'application/json'
         },
@@ -113,6 +110,7 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
+          this.$store.dispatch('getWeeklyReports')
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }

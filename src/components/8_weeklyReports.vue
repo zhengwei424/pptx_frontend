@@ -1,5 +1,38 @@
 <template>
   <div class="weeklyReports">
+    <h3>周报JSON</h3>
+    <el-table
+        :data="weeklyReportsJson"
+        border
+        style="width: 100%">
+      <el-table-column
+          width="55"
+      >
+        <template scope="scope">
+          <el-radio v-model="jsonFile" :label="scope.row.name" @input="getCurrentJson">&nbsp;</el-radio>
+        </template>
+      </el-table-column>
+      <el-table-column
+          prop="name"
+          sortable
+          label="文件名"
+          width="180">
+      </el-table-column>
+      <el-table-column
+          prop="content"
+          sortable
+          label="文件内容"
+          width="180">
+      </el-table-column>
+      <el-table-column
+          sortable
+          label="操作"
+          width="180">
+        <template slot-scope="scope">
+          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <h3>周报</h3>
     <el-table
         :data="weeklyReports"
@@ -40,15 +73,14 @@
 
 <script>
 import {Message} from "element-ui"
-import axios from "axios";
-import Vue from "vue";
+import Vue from 'vue'
 
 export default {
   name: "WeeklyReports",
   data() {
     return {
       // 上传地址
-      url: Vue.prototype.VUE_APP_BACKEND_URL + "/weeklyReports/upload",
+      url: "/weeklyReports/upload",
       // 上传文件的文件名
       filename: null,
       // 文件上传是附带的额外参数
@@ -58,11 +90,16 @@ export default {
       // 请求头
       header: null,
       selectedItems: [],
+      // 当前选中的json文件
+      jsonFile: ''
     }
   },
   computed: {
     weeklyReports() {
       return this.$store.state.weeklyReports
+    },
+    weeklyReportsJson() {
+      return this.$store.state.weeklyReportsJson
     }
   },
   mounted() {
@@ -79,9 +116,9 @@ export default {
     },
     download() {
       this.selectedItems.map(item => {
-        const url = `${Vue.prototype.VUE_APP_BACKEND_URL}/weeklyReports/download/${item.name}`
+        const url = `/weeklyReports/download/${item.name}`
         return new Promise((resolve, reject) => {
-          axios.get(url, {responseType: 'blob'}).then((response) => {
+          Vue.prototype.myAxios.get(url, {responseType: 'blob'}).then((response) => {
             // Blob是一个不可变的、原始数据的类文件对象，它的数据可以按文本或二进制的格式进行读取，也可以转换成 ReadableStream 来用于数据操作。
             let blob = new Blob([response.data], {
               // pptx的MIME Type, （linux可以通过file -i <filename>查看文件MIME Type）
@@ -110,18 +147,18 @@ export default {
     },
     refresh() {
       this.$store.dispatch('getWeeklyReports')
+      this.$store.dispatch('getWeeklyReportsJson')
     },
     getSelectedItems(items) {
       this.selectedItems = items
     },
     create() {
-      const url = Vue.prototype.VUE_APP_BACKEND_URL + "/monthlyReportsData"
+      const url = "/monthlyReportsData"
       let weekly_reports = []
       for (const item of this.selectedItems) {
         weekly_reports.push(item.name)
       }
-      console.log(weekly_reports)
-      axios.post(url, weekly_reports).then(response => {
+      Vue.prototype.myAxios.post(url, weekly_reports).then(response => {
         if (response.data.code === 0) {
           this.$message({
             message: response.data.msg,
@@ -134,6 +171,12 @@ export default {
       }).catch(err => {
         this.$message.error(err)
       })
+    },
+    edit(row) {
+      console.log(row)
+    },
+    getCurrentJson() {
+      console.log(this.jsonFile)
     }
   }
 }

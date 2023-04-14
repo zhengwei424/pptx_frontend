@@ -3,26 +3,20 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App.vue'
 import store from './store'
-import axios from "axios"
+import axios from "axios";
+
 
 
 Vue.use(ElementUI)
 Vue.config.productionTip = false
+Vue.prototype.myAxios = axios.create({
+    baseURL: 'http://192.168.10.168:5000'
+})
 
-let startApp = function () {
-    axios
-        .get("serverConfig.json")
-        .then((res) => {
-            Vue.prototype.VUE_APP_BACKEND_URL = res.data.VUE_APP_BACKEND_URL
-            new Vue({
-                render: h => h(App),
-                store,
-            }).$mount('#app')
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-}
-startApp()
+new Vue({
+    render: h => h(App),
+    store,
+}).$mount('#app')
+
 
 

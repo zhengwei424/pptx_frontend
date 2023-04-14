@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import axios from 'axios'
 
 Vue.use(Vuex)
 
 const actions = {
     getWeeklyReports(context) {
         new Promise((resolve, reject) => {
-            axios.get(
-                Vue.prototype.VUE_APP_BACKEND_URL + "/weeklyReports",
+            Vue.prototype.myAxios.get(
+                "/weeklyReports",
             ).then(response => {
                 const {data} = response
                 context.commit('GETWEEKLYREPORTS', data)
@@ -18,13 +17,39 @@ const actions = {
             })
         })
     },
+    getWeeklyReportsJson(context) {
+        new Promise((resolve, reject) => {
+            Vue.prototype.myAxios.get(
+                "/weeklyReportsJson",
+            ).then(response => {
+                const {data} = response
+                context.commit('GETWEEKLYREPORTSJSON', data)
+                resolve()
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
     getMonthlyReports(context) {
         new Promise((resolve, reject) => {
-            axios.get(
-                Vue.prototype.VUE_APP_BACKEND_URL + "/monthlyReports",
+            Vue.prototype.myAxios.get(
+                "/monthlyReports",
             ).then(response => {
                 const {data} = response
                 context.commit('GETMONTHLYREPORTS', data)
+                resolve()
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
+    getMonthlySummaryReports(context) {
+        new Promise((resolve, reject) => {
+            Vue.prototype.myAxios.get(
+                "/monthlySummaryReports",
+            ).then(response => {
+                const {data} = response
+                context.commit('GETMONTHLYSUMMARYREPORTS', data)
                 resolve()
             }).catch(err => {
                 reject(err)
@@ -37,8 +62,14 @@ const mutations = {
     GETWEEKLYREPORTS(state, data) {
         state.weeklyReports = data
     },
+    GETWEEKLYREPORTSJSON(state, data) {
+        state.weeklyReportsJson = data
+    },
     GETMONTHLYREPORTS(state, data) {
         state.monthlyReports = data
+    },
+    GETMONTHLYSUMMARYREPORTS(state, data) {
+        state.monthlySummaryReports = data
     },
 
     setInspect(state, data) {
@@ -94,7 +125,9 @@ const state = {
     problem: [],
     workingPlan: [],
     weeklyReports: [],
+    weeklyReportsJson: [],
     monthlyReports: [],
+    monthlySummaryReports: [],
 }
 
 const getters = {

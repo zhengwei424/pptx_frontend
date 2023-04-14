@@ -39,15 +39,15 @@
 
 <script>
 import {Message} from "element-ui";
-import axios from "axios";
-import Vue from "vue";
+import Vue from 'vue'
+
 
 export default {
   name: "MonthlyReports",
   data() {
     return {
       // 上传地址
-      url: "http://192.168.10.168:5000/monthlyReports/upload",
+      url: "/monthlyReports/upload",
       // 上传文件的文件名
       filename: null,
       // 文件上传是附带的额外参数
@@ -78,9 +78,9 @@ export default {
     },
     download() {
       this.selectedItems.map(item => {
-        const url = `${Vue.prototype.VUE_APP_BACKEND_URL}/monthlyReports/download/${item.name}`
+        const url = `/monthlyReports/download/${item.name}`
         return new Promise((resolve, reject) => {
-          axios.get(url,{responseType: 'blob'}).then((response) => {
+          Vue.prototype.myAxios.get(url,{responseType: 'blob'}).then((response) => {
             // Blob是一个不可变的、原始数据的类文件对象，它的数据可以按文本或二进制的格式进行读取，也可以转换成 ReadableStream 来用于数据操作。
             let blob = new Blob([response.data],{
               // pptx的MIME Type, （linux可以通过file -i <filename>查看文件MIME Type）
