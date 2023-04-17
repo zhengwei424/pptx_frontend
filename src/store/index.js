@@ -43,6 +43,19 @@ const actions = {
             })
         })
     },
+    getMonthlyReportsJson(context) {
+        new Promise((resolve, reject) => {
+            Vue.prototype.myAxios.get(
+                "/monthlyReportsJson",
+            ).then(response => {
+                const {data} = response
+                context.commit('GETMONTHLYREPORTSJSON', data)
+                resolve()
+            }).catch(err => {
+                reject(err)
+            })
+        })
+    },
     getMonthlySummaryReports(context) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
@@ -67,6 +80,9 @@ const mutations = {
     },
     GETMONTHLYREPORTS(state, data) {
         state.monthlyReports = data
+    },
+    GETMONTHLYREPORTSJSON(state, data) {
+        state.monthlyReportsJson = data
     },
     GETMONTHLYSUMMARYREPORTS(state, data) {
         state.monthlySummaryReports = data
@@ -127,6 +143,7 @@ const state = {
     weeklyReports: [],
     weeklyReportsJson: [],
     monthlyReports: [],
+    monthlyReportsJson: [],
     monthlySummaryReports: [],
 }
 

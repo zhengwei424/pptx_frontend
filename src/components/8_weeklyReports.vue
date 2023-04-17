@@ -9,19 +9,13 @@
           width="55"
       >
         <template scope="scope">
-          <el-radio v-model="jsonFile" :label="scope.row.name" @input="getCurrentJson">&nbsp;</el-radio>
+          <el-radio v-model="editTitle" :label="scope.row.fileName">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
-          prop="name"
+          prop="fileName"
           sortable
           label="文件名"
-          width="180">
-      </el-table-column>
-      <el-table-column
-          prop="content"
-          sortable
-          label="文件内容"
           width="180">
       </el-table-column>
       <el-table-column
@@ -29,10 +23,11 @@
           label="操作"
           width="180">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="edit(scope.row.fileName)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <el-button type="primary" @click="updateWeeklyReport">指定JSON更新周报</el-button>
     <h3>周报</h3>
     <el-table
         :data="weeklyReports"
@@ -51,7 +46,7 @@
       </el-table-column>
     </el-table>
     <div>
-      <!--文件上传-->
+      <!--文件上传
       <el-upload
           class="upload-demo"
           :show-file-list="false"
@@ -63,20 +58,43 @@
       >
         <el-button type="primary">上传</el-button>
       </el-upload>
+      -->
       <!--文件下载-->
       <el-button class="download" type="primary" @click="download">下载</el-button>
       <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
       <el-button class="create" type="primary" @click="create">合成月报</el-button>
     </div>
+    <!--编辑json-->
+    <el-dialog
+        :title="editTitle"
+        :visible.sync="dialogVisible"
+        width="80%"
+    >
+      <MonacoEditor
+          :value="editValue"
+          width="800px"
+          height="500px"
+          language="json"
+          @input="getNewJsonData"
+      ></MonacoEditor>
+      <span slot="footer">
+        <el-button @click="dialogVisible=false">取消</el-button>
+        <el-button type="primary" @click="updateJson">保存</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {Message} from "element-ui"
+import MonacoEditor from 'monaco-editor-vue'
 import Vue from 'vue'
 
 export default {
   name: "WeeklyReports",
+  components: {
+    MonacoEditor
+  },
   data() {
     return {
       // 上传地址
@@ -91,7 +109,13 @@ export default {
       header: null,
       selectedItems: [],
       // 当前选中的json文件
-      jsonFile: ''
+      editTitle: '',
+      // 当前选中的json文件内容
+      editValue: '',
+      // 编辑后的新值
+      newEditValue: '',
+      // dialogVisible
+      dialogVisible: false
     }
   },
   computed: {
@@ -164,19 +188,86 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
+          this.$store.dispatch('getMonthlyReports')
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
-        this.$store.dispatch('getMonthlyReports')
       }).catch(err => {
         this.$message.error(err)
       })
     },
-    edit(row) {
-      console.log(row)
+    // 编辑json
+    edit(name) {
+      this.dialogVisible = true
+      this.editTitle = name
+      this.weeklyReportsJson.forEach(item => {
+        if (item.fileName === name) {
+          this.editValue = item.fileContent
+        }
+      })
     },
-    getCurrentJson() {
-      console.log(this.jsonFile)
+    getNewJsonData(value) {
+      this.newEditValue = value
+    },
+    // 保存json并更新后端json文件
+    updateJson() {
+      this.dialogVisible = false
+      const url = "/weeklyReportsJson"
+      const data = {
+        fileName: this.editTitle,
+        fileContent: this.newEditValue
+      }
+      Vue.prototype.myAxios.post(url, data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        if (response.data.code === 0) {
+          this.$message({
+            message: response.data.msg,
+            type: 'success'
+          });
+          this.$store.dispatch('getWeeklyReportsJson')
+        } else if (response.data.code === 1) {
+          this.$message.error(response.data.msg)
+        }
+      }).catch(err => {
+        this.$message.error(err)
+      })
+    },
+    updateWeeklyReport() {
+      if (this.editTitle === '') {
+        this.$message({
+          type: "warning",
+          message: '请指定JSON文件'
+        })
+        return
+      }
+      let post_data = ''
+      this.weeklyReportsJson.forEach(item => {
+        if (item.fileName === this.editTitle) {
+          post_data = item.fileContent
+        }
+      })
+      // status === 0 表示创建 1表示修改
+      post_data["status"] = 1
+      Vue.prototype.myAxios.post('/weeklyReportsData', post_data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then(response => {
+        if (response.data.code === 0) {
+          this.$message({
+            message: response.data.msg,
+            type: 'success'
+          });
+          this.$store.dispatch('getWeeklyReports')
+        } else if (response.data.code === 1) {
+          this.$message.error(response.data.msg)
+        }
+      }).catch((err) => {
+        this.$message.error(err)
+      })
     }
   }
 }

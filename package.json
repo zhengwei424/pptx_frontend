@@ -12,6 +12,9 @@
     "common": "^0.2.5",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.9",
+    "monaco-editor": "^0.29.1",
+    "monaco-editor-vue": "^1.0.10",
+    "monaco-editor-webpack-plugin": "^5.0.0",
     "shortid": "^2.2.16",
     "vue": "^2.6.11",
     "vuex": "3.0"

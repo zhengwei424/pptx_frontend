@@ -1,5 +1,23 @@
 <template>
   <div class="monthlyReports">
+    <h3>月报JSON</h3>
+    <el-table
+        :data="monthlyReportsJson"
+        border
+        @selection-change="getJsonSelectedItems"
+        style="width: 100%">
+      <el-table-column
+          type="selection"
+          width="55"
+      ></el-table-column>
+      <el-table-column
+          prop="fileName"
+          sortable
+          label="月报JSON"
+          width="180">
+      </el-table-column>
+    </el-table>
+    <el-button class="create" type="primary" @click="create">自定义月报汇总</el-button>
     <h3>月报</h3>
     <el-table
         :data="monthlyReports"
@@ -18,7 +36,7 @@
       </el-table-column>
     </el-table>
     <div>
-      <!--文件上传-->
+      <!--文件上传
       <el-upload
           class="upload-demo"
           :show-file-list="false"
@@ -29,7 +47,7 @@
           :on-success="file_upload"
       >
         <el-button type="primary">上传</el-button>
-      </el-upload>
+      </el-upload>-->
       <!--文件下载-->
       <el-button class="download" type="primary" @click="download">下载</el-button>
       <el-button class="refresh" type="primary" @click="refresh">刷新</el-button>
@@ -56,12 +74,16 @@ export default {
       },
       // 请求头
       header: null,
+      jsonSelectedItems: [],
       selectedItems: []
     }
   },
   computed: {
     monthlyReports() {
       return this.$store.state.monthlyReports
+    },
+    monthlyReportsJson() {
+      return this.$store.state.monthlyReportsJson
     }
   },
   mounted() {
@@ -109,9 +131,42 @@ export default {
     },
     refresh() {
       this.$store.dispatch('getMonthlyReports')
+      this.$store.dispatch('getMonthlyReportsJson')
+    },
+    getJsonSelectedItems(items) {
+      this.jsonSelectedItems = items
     },
     getSelectedItems(items) {
       this.selectedItems = items
+    },
+    // 汇总月报
+    create() {
+      if (this.jsonSelectedItems.length === 0) {
+        this.$message({
+          message: "请选择需要汇总的月报JSON",
+          type: 'warning'
+        });
+        return
+      }
+
+      const url = "/monthlySummaryData"
+      let monthly_report_json_files = []
+      for (const item of this.jsonSelectedItems) {
+        monthly_report_json_files.push(item.fileName)
+      }
+      Vue.prototype.myAxios.post(url, monthly_report_json_files).then(response => {
+        if (response.data.code === 0) {
+          this.$message({
+            message: response.data.msg,
+            type: 'success'
+          });
+          this.$store.dispatch('getMonthlySummaryReports')
+        } else if (response.data.code === 1) {
+          this.$message.error(response.data.msg)
+        }
+      }).catch(err => {
+        this.$message.error(err)
+      })
     }
   }
 }

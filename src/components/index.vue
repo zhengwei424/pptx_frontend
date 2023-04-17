@@ -67,7 +67,6 @@ import WorkingPlan from './7_workingPlan'
 import WeeklyReports from './8_weeklyReports'
 import MonthlyReports from './9_monthlyReports'
 import MonthlySummaryReports from './10_monthlySummaryReports'
-import axios from 'axios'
 import Vue from 'vue'
 
 export default {
@@ -97,14 +96,12 @@ export default {
   methods: {
     onSubmit() {
       const weeklyData = this.$store.getters.weeklyData
-      axios.create({
-        baseURL: Vue.prototype.BACKEND_BASE_URL,
+      // status === 0 表示创建 1表示修改
+      Vue.prototype.myAxios.post('/weeklyReportsData', {"status": 0, "weeklyData": weeklyData, "formdata": this.formData}, {
         headers: {
           'Content-Type': 'application/json'
-        },
-        method: 'POST',
-        withCredentials: true
-      }).post('/weeklyReportsData', {"weeklyData": weeklyData, "formdata": this.formData}).then(response => {
+        }
+      }).then(response => {
         if (response.data.code === 0) {
           this.$message({
             message: response.data.msg,
@@ -127,12 +124,14 @@ export default {
   height: 50px;
   background-image: linear-gradient(to top, #6a85b6 0%, #bac8e0 100%);
 }
+
 .commit {
   height: 200px;
   margin: 10px 0;
   padding: 10px;
   box-shadow: #666666 0 0 10px;
 }
+
 .el-form {
   margin-top: 50px;
 }
