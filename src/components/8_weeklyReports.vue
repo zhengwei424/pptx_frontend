@@ -243,14 +243,14 @@ export default {
         })
         return
       }
-      let post_data = ''
+      let post_data = {}
       this.weeklyReportsJson.forEach(item => {
         if (item.fileName === this.editTitle) {
-          post_data = item.fileContent
+          post_data = JSON.parse(item.fileContent)
         }
       })
       // status === 0 表示创建 1表示修改
-      post_data["status"] = 1
+
       Vue.prototype.myAxios.post('/weeklyReportsData', post_data, {
         headers: {
           'Content-Type': 'application/json'
