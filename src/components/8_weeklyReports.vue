@@ -250,7 +250,7 @@ export default {
         }
       })
       // status === 0 表示创建 1表示修改
-
+      post_data["status"] = 1
       Vue.prototype.myAxios.post('/weeklyReportsData', post_data, {
         headers: {
           'Content-Type': 'application/json'
