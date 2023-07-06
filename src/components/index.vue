@@ -108,6 +108,7 @@ export default {
             type: 'success'
           });
           this.$store.dispatch('getWeeklyReports')
+          this.$store.dispatch('getWeeklyReportsJson')
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }

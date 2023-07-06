@@ -28,6 +28,7 @@
       </el-table-column>
     </el-table>
     <el-button type="primary" @click="updateWeeklyReport">指定JSON更新周报</el-button>
+    <div style="color: #6a85b6;font-size: 14px">注意: 如果要通过json更新周报，需要将JSON的status字段设置为1</div>
     <h3>周报</h3>
     <el-table
         :data="weeklyReports"
@@ -189,6 +190,7 @@ export default {
             type: 'success'
           });
           this.$store.dispatch('getMonthlyReports')
+          this.$store.dispatch('getMonthlyReportsJson')
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
