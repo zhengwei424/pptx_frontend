@@ -109,6 +109,9 @@ const mutations = {
     },
     setWorkingPlan(state, data) {
         state.workingPlan = data
+    },
+    setFormData(state, data) {
+        state.formData = data
     }
 }
 
@@ -140,6 +143,11 @@ const state = {
     cooperation: [],
     problem: [],
     workingPlan: [],
+    formData: {
+        year: (new Date()).getFullYear().toString(),
+        month: '',
+        week: ''
+    },
     weeklyReports: [],
     weeklyReportsJson: [],
     monthlyReports: [],

@@ -85,19 +85,31 @@ export default {
   },
   data() {
     return {
-      activeNames: ['1'],
-      formData: {
-        year: (new Date()).getFullYear().toString(),
-        month: '',
-        week: ''
-      }
+      activeNames: ['1']
+    }
+  },
+  computed: {
+    formData() {
+      return this.$store.state.formData
+    }
+  },
+  watch: {
+    formData: {
+      handler: function (val) {
+        this.$store.commit('setFormData', val)
+      },
+      deep: true
     }
   },
   methods: {
     onSubmit() {
       const weeklyData = this.$store.getters.weeklyData
       // status === 0 表示创建 1表示修改
-      Vue.prototype.myAxios.post('/weeklyReportsData', {"status": 0, "weeklyData": weeklyData, "formdata": this.formData}, {
+      Vue.prototype.myAxios.post('/weeklyReportsData', {
+        "status": 0,
+        "weeklyData": weeklyData,
+        "formdata": this.formData
+      }, {
         headers: {
           'Content-Type': 'application/json'
         }

@@ -10,7 +10,8 @@ import axios from "axios";
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 Vue.prototype.myAxios = axios.create({
-    baseURL: ''
+    // baseURL: ''
+    baseURL: 'http://192.168.10.168:5000'
 })
 
 new Vue({

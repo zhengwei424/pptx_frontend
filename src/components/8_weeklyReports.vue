@@ -9,7 +9,7 @@
           width="55"
       >
         <template scope="scope">
-          <el-radio v-model="editTitle" :label="scope.row.fileName">&nbsp;</el-radio>
+          <el-radio v-model="editTitle" :label="scope.row.fileName" >&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
@@ -125,6 +125,34 @@ export default {
     },
     weeklyReportsJson() {
       return this.$store.state.weeklyReportsJson
+    }
+  },
+  watch: {
+    editTitle: function (val)  {
+      console.log(val)
+      // 当editTile值发生变化时，提示用户保存浏览器界面所填数据
+      this.$confirm('请确认页面上所填数据是否已经提交', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: "warning"
+      }).then(()=>{
+        // 用户点击“确认”后，将所选json渲染到页面
+        this.weeklyReportsJson.forEach(item => {
+          if (item.fileName === val) {
+            let jsonObj = JSON.parse(item.fileContent)
+            this.$store.commit('setInspect', jsonObj.weeklyData.inspect)
+            this.$store.commit('setChange', jsonObj.weeklyData.change)
+            this.$store.commit('setRelease', jsonObj.weeklyData.release)
+            this.$store.commit('setPermissionManagement', jsonObj.weeklyData.permissionManagement)
+            this.$store.commit('setCooperation', jsonObj.weeklyData.cooperation)
+            this.$store.commit('setProblem', jsonObj.weeklyData.problem)
+            this.$store.commit('setWorkingPlan', jsonObj.weeklyData.workingPlan)
+            this.$store.commit('setFormData', jsonObj.formdata)
+          }
+        })
+      }).catch(()=>{
+        // 用户点击“取消”后的操作
+      })
     }
   },
   mounted() {
