@@ -1,24 +1,8 @@
-# pptx_fronted
+# 前端
+https://github.com/zhengwei424/pptx_frontend
 
-## Project setup
-```
-npm install
-```
+# 后端
+https://github.com/zhengwei424/pptx_backend
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# 功能拼图
+![xx](https://github.com/zhengwei424/pptx_backend/blob/master/11.jpg)
