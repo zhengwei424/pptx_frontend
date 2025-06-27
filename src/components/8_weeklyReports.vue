@@ -129,7 +129,6 @@ export default {
   },
   watch: {
     editTitle: function (val)  {
-      console.log(val)
       // 当editTile值发生变化时，提示用户保存浏览器界面所填数据
       this.$confirm('请确认页面上所填数据是否已经提交', '提示', {
         confirmButtonText: '确定',
