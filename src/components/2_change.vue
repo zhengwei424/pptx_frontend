@@ -135,8 +135,13 @@ export default {
     }
   },
   computed: {
-    tableData() {
-      return this.$store.state.change
+    tableData: {
+      get: function () {
+        return this.$store.state.change
+      },
+      set: function (val) {
+        this.$store.commit('setChange', val)
+      }
     },
   },
   watch: {
@@ -158,7 +163,7 @@ export default {
   // },
   methods: {
     // 此处只是给row和column加一个索引index，不设置class name，如果需要自定义class name，return一个字符串即可
-    setCellClassName({ row, column, rowIndex, columnIndex }) {
+    setCellClassName({row, column, rowIndex, columnIndex}) {
       row.index = rowIndex
       column.index = columnIndex
     },
@@ -308,12 +313,23 @@ export default {
         support: '无',
         progress: '已完成'
       }
-      this.tableData.push(row)
+      if (this.selectedItems.length > 0) {
+        // 如果发生了筛选，则以第一个筛选索引为准，将数据插入到这个索引之前
+        this.tableData.splice(this.selectedItems[0].index, 0, row)
+      } else {
+        this.tableData.push(row)
+      }
+
     },
     del() {
-      for (const item of this.selectedItems) {
-        this.tableData.splice(item.index, 1)
-      }
+      //!!! 顺序删除索引会发生变化，导致批量操作时，删除异常，可用倒序删除方式或filter方法
+      let tmp = []
+      this.selectedItems.forEach(item => {
+        tmp.push(item.index)
+      })
+      this.tableData = this.tableData.filter((_, index) => {
+        return !tmp.includes(index)
+      })
     }
   }
 }

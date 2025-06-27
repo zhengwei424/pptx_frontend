@@ -112,8 +112,13 @@ export default {
     }
   },
   computed: {
-    tableData() {
-      return this.$store.state.permissionManagement
+    tableData: {
+      get: function () {
+        return this.$store.state.permissionManagement
+      },
+      set: function (val) {
+        this.$store.commit('setPermissionManagement', val)
+      }
     }
   },
   // directives: {
@@ -125,7 +130,7 @@ export default {
   // },
   methods: {
     // 此处只是给row和column加一个索引index，不设置class name，如果需要自定义class name，return一个字符串即可
-    setCellClassName({ row, column, rowIndex, columnIndex }) {
+    setCellClassName({row, column, rowIndex, columnIndex}) {
       row.index = rowIndex
       column.index = columnIndex
     },
@@ -273,9 +278,14 @@ export default {
       this.tableData.push(row)
     },
     del() {
-      for (const item of this.selectedItems) {
-        this.tableData.splice(item.index, 1)
-      }
+      //!!! 顺序删除索引会发生变化，导致批量操作时，删除异常，可用倒序删除方式或filter方法
+      let tmp = []
+      this.selectedItems.forEach(item => {
+        tmp.push(item.index)
+      })
+      this.tableData = this.tableData.filter((_, index) => {
+        return !tmp.includes(index)
+      })
     }
   }
 }
@@ -285,6 +295,7 @@ export default {
 h3 {
   color: rgb(0, 0, 0, 0.7);
 }
+
 .permissionManagement {
   margin: 10px 0;
   padding: 10px;
