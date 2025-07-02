@@ -4,10 +4,10 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const actions = {
-    getWeeklyReports(context) {
+    getWeeklyReports(context, parms) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
-                "/weeklyReports",
+                `/weeklyReports?currentPage=${parms.currentPage}&pageSize=${parms.pageSize}`,
             ).then(response => {
                 const {data} = response
                 context.commit('GETWEEKLYREPORTS', data)
@@ -17,10 +17,10 @@ const actions = {
             })
         })
     },
-    getWeeklyReportsJson(context) {
+    getWeeklyReportsJson(context, parms) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
-                "/weeklyReportsJson",
+                `/weeklyReportsJson?currentPage=${parms.currentPage}&pageSize=${parms.pageSize}`,
             ).then(response => {
                 const {data} = response
                 context.commit('GETWEEKLYREPORTSJSON', data)
@@ -30,10 +30,10 @@ const actions = {
             })
         })
     },
-    getMonthlyReports(context) {
+    getMonthlyReports(context, parms) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
-                "/monthlyReports",
+                `/monthlyReports?currentPage=${parms.currentPage}&pageSize=${parms.pageSize}`,
             ).then(response => {
                 const {data} = response
                 context.commit('GETMONTHLYREPORTS', data)
@@ -43,10 +43,10 @@ const actions = {
             })
         })
     },
-    getMonthlyReportsJson(context) {
+    getMonthlyReportsJson(context, parms) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
-                "/monthlyReportsJson",
+                `/monthlyReportsJson?currentPage=${parms.currentPage}&pageSize=${parms.pageSize}`,
             ).then(response => {
                 const {data} = response
                 context.commit('GETMONTHLYREPORTSJSON', data)
@@ -56,10 +56,10 @@ const actions = {
             })
         })
     },
-    getMonthlySummaryReports(context) {
+    getMonthlySummaryReports(context, parms) {
         new Promise((resolve, reject) => {
             Vue.prototype.myAxios.get(
-                "/monthlySummaryReports",
+                `/monthlySummaryReports?currentPage=${parms.currentPage}&pageSize=${parms.pageSize}`,
             ).then(response => {
                 const {data} = response
                 context.commit('GETMONTHLYSUMMARYREPORTS', data)

@@ -2,7 +2,7 @@
   <div class="monthlyReports">
     <h3>自定义月报汇总</h3>
     <el-table
-        :data="monthlySummaryReports"
+        :data="monthlySummaryReports.result"
         border
         @selection-change="getSelectedItems"
         style="width: 100%">
@@ -17,6 +17,19 @@
           width=auto>
       </el-table-column>
     </el-table>
+    <!-- monthlySummaryReports 分页 -->
+    <div style="margin: 10px 0">
+      <el-pagination
+          @size-change="handleSizeChange1"
+          @current-change="handleCurrentChange1"
+          :current-page="currentPage1"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="pageSize1"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="monthlySummaryReports.total">
+        >
+      </el-pagination>
+    </div>
     <div>
       <!--文件上传
       <el-upload
@@ -45,7 +58,10 @@ export default {
   name: "MonthlySummaryReports",
   data() {
     return {
-      selectedItems: []
+      selectedItems: [],
+      // report分页
+      currentPage1: 1,
+      pageSize1: 10,
     }
   },
   computed: {
@@ -89,11 +105,26 @@ export default {
       })
     },
     refresh() {
-      this.$store.dispatch('getMonthlySummaryReports')
+      this.$store.dispatch('getMonthlySummaryReports', {currentPage: this.currentPage1, pageSize: this.pageSize1})
     },
     getSelectedItems(items) {
       this.selectedItems = items
-    }
+    },
+    // report 分页
+    handleSizeChange1(val) {
+      this.pageSize1 = val
+      this.$store.dispatch(
+          'getMonthlySummaryReports',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
+    handleCurrentChange1(val) {
+      this.currentPage1 = val
+      this.$store.dispatch(
+          'getMonthlySummaryReports',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
   }
 }
 </script>

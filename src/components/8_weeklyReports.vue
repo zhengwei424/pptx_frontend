@@ -2,14 +2,14 @@
   <div class="weeklyReports">
     <h3>周报JSON</h3>
     <el-table
-        :data="weeklyReportsJson"
+        :data="weeklyReportsJson.result"
         border
         style="width: 100%">
       <el-table-column
           width="55"
       >
         <template scope="scope">
-          <el-radio v-model="editTitle" :label="scope.row.fileName" >&nbsp;</el-radio>
+          <el-radio v-model="editTitle" :label="scope.row.fileName">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <el-table-column
@@ -27,11 +27,25 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- weeklyReportJson 分页 -->
+    <div style="margin: 10px 0">
+      <el-pagination
+          @size-change="handleSizeChange1"
+          @current-change="handleCurrentChange1"
+          :current-page="currentPage1"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="pageSize1"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="weeklyReportsJson.total">
+        >
+      </el-pagination>
+    </div>
+
     <el-button type="primary" @click="updateWeeklyReport">指定JSON更新周报</el-button>
-    <div style="color: #6a85b6;font-size: 14px">注意: 如果要通过json更新周报，需要将JSON的status字段设置为1</div>
+
     <h3>周报</h3>
     <el-table
-        :data="weeklyReports"
+        :data="weeklyReports.result"
         border
         @selection-change="getSelectedItems"
         style="width: 100%">
@@ -46,6 +60,20 @@
           width="180">
       </el-table-column>
     </el-table>
+
+    <!-- weeklyReport 分页 -->
+    <div style="margin: 10px 0">
+      <el-pagination
+          @size-change="handleSizeChange2"
+          @current-change="handleCurrentChange2"
+          :current-page="currentPage2"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="pageSize2"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="weeklyReports.total">
+        >
+      </el-pagination>
+    </div>
     <div>
       <!--文件上传
       <el-upload
@@ -116,7 +144,13 @@ export default {
       // 编辑后的新值
       newEditValue: '',
       // dialogVisible
-      dialogVisible: false
+      dialogVisible: false,
+      // json分页
+      currentPage1: 1,
+      pageSize1: 10,
+      // report分页
+      currentPage2: 1,
+      pageSize2: 10
     }
   },
   computed: {
@@ -128,15 +162,15 @@ export default {
     }
   },
   watch: {
-    editTitle: function (val)  {
+    editTitle: function (val) {
       // 当editTile值发生变化时，提示用户保存浏览器界面所填数据
       this.$confirm('请确认页面上所填数据是否已经提交', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: "warning"
-      }).then(()=>{
+      }).then(() => {
         // 用户点击“确认”后，将所选json渲染到页面
-        this.weeklyReportsJson.forEach(item => {
+        this.weeklyReportsJson.result.forEach(item => {
           if (item.fileName === val) {
             let jsonObj = JSON.parse(item.fileContent)
             this.$store.commit('setInspect', jsonObj.weeklyData.inspect)
@@ -149,7 +183,7 @@ export default {
             this.$store.commit('setFormData', jsonObj.formdata)
           }
         })
-      }).catch(()=>{
+      }).catch(() => {
         // 用户点击“取消”后的操作
       })
     }
@@ -198,8 +232,8 @@ export default {
       })
     },
     refresh() {
-      this.$store.dispatch('getWeeklyReports')
-      this.$store.dispatch('getWeeklyReportsJson')
+      this.$store.dispatch('getWeeklyReports', {currentPage: this.currentPage2, pageSize: this.pageSize2})
+      this.$store.dispatch('getWeeklyReportsJson', {currentPage: this.currentPage1, pageSize: this.pageSize1})
     },
     getSelectedItems(items) {
       this.selectedItems = items
@@ -216,8 +250,8 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
-          this.$store.dispatch('getMonthlyReports')
-          this.$store.dispatch('getMonthlyReportsJson')
+          this.$store.dispatch('getMonthlyReports', {currentPage: 1, pageSize: 10})
+          this.$store.dispatch('getMonthlyReportsJson', {currentPage: 1, pageSize: 10})
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
@@ -229,7 +263,7 @@ export default {
     edit(name) {
       this.dialogVisible = true
       this.editTitle = name
-      this.weeklyReportsJson.forEach(item => {
+      this.weeklyReportsJson.result.forEach(item => {
         if (item.fileName === name) {
           this.editValue = item.fileContent
         }
@@ -256,7 +290,7 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
-          this.$store.dispatch('getWeeklyReportsJson')
+          this.$store.dispatch('getWeeklyReportsJson', {currentPage: this.currentPage1, pageSize: this.pageSize1})
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
@@ -273,7 +307,7 @@ export default {
         return
       }
       let post_data = {}
-      this.weeklyReportsJson.forEach(item => {
+      this.weeklyReportsJson.result.forEach(item => {
         if (item.fileName === this.editTitle) {
           post_data = JSON.parse(item.fileContent)
         }
@@ -290,13 +324,43 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
-          this.$store.dispatch('getWeeklyReports')
+          this.$store.dispatch('getWeeklyReports', {currentPage: this.currentPage2, pageSize: this.pageSize2})
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
       }).catch((err) => {
         this.$message.error(err)
       })
+    },
+    // json 分页
+    handleSizeChange1(val) {
+      this.pageSize1 = val
+      this.$store.dispatch(
+          'getWeeklyReportsJson',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
+    handleCurrentChange1(val) {
+      this.currentPage1 = val
+      this.$store.dispatch(
+          'getWeeklyReportsJson',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
+    // report 分页
+    handleSizeChange2(val) {
+      this.pageSize2 = val
+      this.$store.dispatch(
+          'getWeeklyReports',
+          {currentPage: this.currentPage2, pageSize: this.pageSize2}
+      )
+    },
+    handleCurrentChange2(val) {
+      this.currentPage2 = val
+      this.$store.dispatch(
+          'getWeeklyReports',
+          {currentPage: this.currentPage2, pageSize: this.pageSize2}
+      )
     }
   }
 }

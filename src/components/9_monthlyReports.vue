@@ -2,7 +2,7 @@
   <div class="monthlyReports">
     <h3>月报JSON</h3>
     <el-table
-        :data="monthlyReportsJson"
+        :data="monthlyReportsJson.result"
         border
         @selection-change="getJsonSelectedItems"
         style="width: 100%">
@@ -17,10 +17,23 @@
           width="180">
       </el-table-column>
     </el-table>
+    <!-- monthlyReportJson 分页 -->
+    <div style="margin: 10px 0">
+      <el-pagination
+          @size-change="handleSizeChange1"
+          @current-change="handleCurrentChange1"
+          :current-page="currentPage1"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="pageSize1"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="monthlyReportsJson.total">
+        >
+      </el-pagination>
+    </div>
     <el-button class="create" type="primary" @click="create">自定义月报汇总</el-button>
     <h3>月报</h3>
     <el-table
-        :data="monthlyReports"
+        :data="monthlyReports.result"
         border
         @selection-change="getSelectedItems"
         style="width: 100%">
@@ -35,6 +48,19 @@
           width="180">
       </el-table-column>
     </el-table>
+    <!-- monthlyReport 分页 -->
+    <div style="margin: 10px 0">
+      <el-pagination
+          @size-change="handleSizeChange2"
+          @current-change="handleCurrentChange2"
+          :current-page="currentPage2"
+          :page-sizes="[10, 20, 30, 50]"
+          :page-size="pageSize2"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="monthlyReports.total">
+        >
+      </el-pagination>
+    </div>
     <div>
       <!--文件上传
       <el-upload
@@ -75,7 +101,13 @@ export default {
       // 请求头
       header: null,
       jsonSelectedItems: [],
-      selectedItems: []
+      selectedItems: [],
+      // json分页
+      currentPage1: 1,
+      pageSize1: 10,
+      // report分页
+      currentPage2: 1,
+      pageSize2: 10
     }
   },
   computed: {
@@ -130,8 +162,8 @@ export default {
       })
     },
     refresh() {
-      this.$store.dispatch('getMonthlyReports')
-      this.$store.dispatch('getMonthlyReportsJson')
+      this.$store.dispatch('getMonthlyReports', {currentPage: this.currentPage2, pageSize: this.pageSize2})
+      this.$store.dispatch('getMonthlyReportsJson', {currentPage: this.currentPage1, pageSize: this.pageSize1})
     },
     getJsonSelectedItems(items) {
       this.jsonSelectedItems = items
@@ -160,13 +192,43 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
-          this.$store.dispatch('getMonthlySummaryReports')
+          this.$store.dispatch('getMonthlySummaryReports', {currentPage: 1, pageSize: 10})
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }
       }).catch(err => {
         this.$message.error(err)
       })
+    },
+    // json 分页
+    handleSizeChange1(val) {
+      this.pageSize1 = val
+      this.$store.dispatch(
+          'getMonthlyReportsJson',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
+    handleCurrentChange1(val) {
+      this.currentPage1 = val
+      this.$store.dispatch(
+          'getMonthlyReportsJson',
+          {currentPage: this.currentPage1, pageSize: this.pageSize1}
+      )
+    },
+    // report 分页
+    handleSizeChange2(val) {
+      this.pageSize2 = val
+      this.$store.dispatch(
+          'getMonthlyReports',
+          {currentPage: this.currentPage2, pageSize: this.pageSize2}
+      )
+    },
+    handleCurrentChange2(val) {
+      this.currentPage2 = val
+      this.$store.dispatch(
+          'getMonthlyReports',
+          {currentPage: this.currentPage2, pageSize: this.pageSize2}
+      )
     }
   }
 }
