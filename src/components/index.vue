@@ -104,12 +104,11 @@ export default {
   methods: {
     onSubmit() {
       const weeklyData = this.$store.getters.weeklyData
+      let currentReportJson = this.$store.state.currentReportJson
+      currentReportJson.weeklyData = weeklyData
+      currentReportJson.formData = this.formData
       // status === 0 表示创建 1表示修改
-      Vue.prototype.myAxios.post('/weeklyReportsData', {
-        "status": 0,
-        "weeklyData": weeklyData,
-        "formdata": this.formData
-      }, {
+      Vue.prototype.myAxios.post('/weeklyReportsData', currentReportJson, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -119,8 +118,8 @@ export default {
             message: response.data.msg,
             type: 'success'
           });
-          this.$store.dispatch('getWeeklyReports')
-          this.$store.dispatch('getWeeklyReportsJson')
+          this.$store.dispatch('getWeeklyReports', {currentPage: 1, pageSize: 10})
+          this.$store.dispatch('getWeeklyReportsJson', {currentPage: 1, pageSize: 10})
         } else if (response.data.code === 1) {
           this.$message.error(response.data.msg)
         }

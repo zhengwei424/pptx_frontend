@@ -112,6 +112,9 @@ const mutations = {
     },
     setFormData(state, data) {
         state.formData = data
+    },
+    setCurrentReportJson(state, data) {
+        state.currentReportJson = data
     }
 }
 
@@ -149,7 +152,14 @@ const state = {
         week: ''
     },
     weeklyReports: [],
-    weeklyReportsJson: [],
+    weeklyReportsJson: [], // 服务器根据分页返回的json列表
+    currentReportJson: {
+        "status": 0,
+        "weeklyData": '',
+        "formData": '',
+        "cluster_pie_data": '',
+        "cluster_table_data": ''
+    }, // 当前正在页面上编辑的周报内容
     monthlyReports: [],
     monthlyReportsJson: [],
     monthlySummaryReports: [],

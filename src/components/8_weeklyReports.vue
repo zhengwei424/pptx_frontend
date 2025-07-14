@@ -173,6 +173,10 @@ export default {
         this.weeklyReportsJson.result.forEach(item => {
           if (item.fileName === val) {
             let jsonObj = JSON.parse(item.fileContent)
+            // 将json设置为“修改”状态
+            jsonObj.status = 1
+            this.$store.commit('setCurrentReportJson', jsonObj)
+            // 渲染相应字段到页面
             this.$store.commit('setInspect', jsonObj.weeklyData.inspect)
             this.$store.commit('setChange', jsonObj.weeklyData.change)
             this.$store.commit('setRelease', jsonObj.weeklyData.release)
@@ -180,7 +184,7 @@ export default {
             this.$store.commit('setCooperation', jsonObj.weeklyData.cooperation)
             this.$store.commit('setProblem', jsonObj.weeklyData.problem)
             this.$store.commit('setWorkingPlan', jsonObj.weeklyData.workingPlan)
-            this.$store.commit('setFormData', jsonObj.formdata)
+            this.$store.commit('setFormData', jsonObj.formData)
           }
         })
       }).catch(() => {
