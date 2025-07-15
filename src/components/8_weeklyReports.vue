@@ -8,7 +8,7 @@
       <el-table-column
           width="55"
       >
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-radio v-model="editTitle" :label="scope.row.fileName">&nbsp;</el-radio>
         </template>
       </el-table-column>
@@ -41,7 +41,7 @@
       </el-pagination>
     </div>
 
-    <el-button type="primary" @click="updateWeeklyReport">指定JSON更新周报</el-button>
+    <!--    <el-button type="primary" @click="updateWeeklyReport">指定JSON更新周报</el-button>-->
 
     <h3>周报</h3>
     <el-table
@@ -118,6 +118,7 @@
 import {Message} from "element-ui"
 import MonacoEditor from 'monaco-editor-vue'
 import Vue from 'vue'
+// import { showSaveFilePicker } from 'file-system-access'
 
 export default {
   name: "WeeklyReports",
@@ -204,6 +205,39 @@ export default {
         duration: 5 * 1000
       })
     },
+    // showSaveFilePicker 流式下载
+    // download() {
+    //   async function saveFileDirectly(content, fileName) {
+    //     const handle = await showSaveFilePicker({
+    //       suggestedName: fileName,
+    //       types: [{
+    //         description: 'stream',
+    //         accept: {'application/octet-stream': ['.bin']}
+    //       }]
+    //     });
+    //     const writable = await handle.createWritable();
+    //     await writable.write(content);
+    //     await writable.close();
+    //   }
+    //
+    //
+    //   this.selectedItems.map(item => {
+    //     const url = `/weeklyReports/download/${item.name}`
+    //     fetch(url)
+    //         .then(res => res.body)
+    //         // ReadableStream
+    //         .then(stream=>{
+    //           const writer = new WritableStream({
+    //             write(chunk) {
+    //               saveFileDirectly(chunk, item.name)
+    //             }
+    //           })
+    //
+    //           return stream.pipeTo(writer)
+    //         })
+    //   })
+    // },
+    // 普通下载
     download() {
       this.selectedItems.map(item => {
         const url = `/weeklyReports/download/${item.name}`

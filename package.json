@@ -12,6 +12,7 @@
     "common": "^0.2.5",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.9",
+    "file-system-access": "^1.0.4",
     "monaco-editor": "^0.29.1",
     "monaco-editor-vue": "^1.0.10",
     "monaco-editor-webpack-plugin": "^5.0.0",
